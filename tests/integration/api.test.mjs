@@ -36,6 +36,20 @@ async function expectStatus(response, status) {
   return response.json();
 }
 
+test('API sin sesión: deniega acceso, comprueba Origin y rechaza JSON inválido', { skip: !base && 'PENDIENTE: definir TEST_BASE_URL', timeout: 60000 }, async () => {
+  const stranger = new Visitor();
+  await expectStatus(await stranger.request('GET', '/api/tasks'), 401);
+  await expectStatus(await stranger.request('POST', '/api/tasks', { title: 'Sin sesión' }), 401);
+  for (const origin of [false, 'null', 'https://evil.example']) {
+    await expectStatus(await stranger.request('POST', '/api/session', {}, origin), 403);
+  }
+  assert.equal(stranger.cookies.size, 0, 'No debe crearse una sesión al rechazar Origin');
+  const malformed = await fetch(`${base}/api/tasks`, { method: 'POST', headers: { Origin: base, 'Content-Type': 'application/json' }, body: '{"title":', redirect: 'manual' });
+  await expectStatus(malformed, 400);
+  const oversized = await fetch(`${base}/api/tasks`, { method: 'POST', headers: { Origin: base, 'Content-Type': 'application/json' }, body: JSON.stringify({ title: 'x'.repeat(9000) }), redirect: 'manual' });
+  await expectStatus(oversized, 413);
+});
+
 test('API real: sesión, CRUD persistente, validación y dos visitantes aislados', { skip: !base && 'PENDIENTE: definir TEST_BASE_URL para ejecutar contra la aplicación real', timeout: 180000 }, async (t) => {
   const a = new Visitor();
   const b = new Visitor();
@@ -44,19 +58,6 @@ test('API real: sesión, CRUD persistente, validación y dos visitantes aislados
   const title = `QA ${randomUUID()}`;
   let id;
   try {
-    await t.test('lectura sin sesión está denegada y las mutaciones exigen Origin', async () => {
-      await expectStatus(await stranger.request('GET', '/api/tasks'), 401);
-      await expectStatus(await stranger.request('POST', '/api/tasks', { title: 'Sin sesión' }), 401);
-      for (const origin of [false, 'null', 'https://evil.example']) {
-        await expectStatus(await stranger.request('POST', '/api/session', {}, origin), 403);
-      }
-      assert.equal(stranger.cookies.size, 0, 'No debe crearse una sesión al rechazar Origin');
-      const malformed = await fetch(`${base}/api/tasks`, { method: 'POST', headers: { Origin: base, 'Content-Type': 'application/json' }, body: '{"title":', redirect: 'manual' });
-      await expectStatus(malformed, 400);
-      const oversized = await fetch(`${base}/api/tasks`, { method: 'POST', headers: { Origin: base, 'Content-Type': 'application/json' }, body: JSON.stringify({ title: 'x'.repeat(9000) }), redirect: 'manual' });
-      await expectStatus(oversized, 413);
-    });
-
     await t.test('sesión anónima no expone tokens y sus cookies son privadas', async () => {
       for (const visitor of [a, b]) {
         const response = await visitor.request('POST', '/api/session', {});

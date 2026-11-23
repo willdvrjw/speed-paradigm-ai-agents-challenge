@@ -95,3 +95,11 @@ Consultadas el 2026-11-23 antes de crear las pruebas independientes:
 
 - La descarga S3 de la CA oficial agotó el tiempo de espera incluso fuera del sandbox. Se localizaron las CA públicas incluidas en el CLI oficial de Supabase: https://github.com/supabase/cli/blob/375df86d9816aaa7417805ea7fc04a278970adf8/apps/cli/src/command-internal/supabase-ca-templates/prod-ca-2021.ts y `prod-ca-2025.ts` en el mismo directorio. Se descargaron desde ese commit y la conexión PostgreSQL cifrada con validación de CA y hostname terminó correctamente; `public.tasks` todavía no existía.
 - Orquestador y Testing revisaron `supabase/migrations/202611230001_create_tasks.sql` antes de aplicarla. Se aplicará únicamente en la base nueva del proyecto `enwgedmpnjnlyxjzbica`; el resultado local guardará hash de la migración, RLS, políticas y restricciones, nunca credenciales.
+
+## Despliegue construido y revisión protegida
+
+- Se consultaron https://vercel.com/docs/cli/deploy y https://vercel.com/docs/deployments/promoting-a-deployment para desplegar producción con `--skip-domain`, sin promover una versión cuya integración funcional está pendiente.
+- Commit de aplicación `f3d8d5f` publicado en GitHub. Vercel terminó READY el despliegue `dpl_B3nUE5cHdYBNeBH2nasPtvXmYFm4` con Next.js, Node 24 y máquina `basic` del plan Hobby.
+- La comprobación sin credenciales redirige a Vercel (302); por tanto no acredita una URL pública. Se consultó https://vercel.com/docs/cli/curl para revisar el despliegue protegido. La CLI creó un bypass de automatización y después reenvió incorrectamente `--global-config` a curl; la comprobación se completó usando el bypass existente solo en cabecera y en memoria, sin imprimirlo.
+- Se consultó https://vercel.com/docs/rest-api/projects/update-protection-bypass-for-automation para revocar ese bypass al acabar. La verificación posterior confirmó cero bypass de automatización restantes. No se deshabilitó la protección de despliegues.
+- La página protegida respondió 200 con título Foco. API de tareas sin sesión: 401. Creación de sesión sin Origin: 403. Con Origin y JSON correctos: 503, coherente con el proveedor anónimo aún desactivado. Todas esas respuestas privadas incluyeron `no-store`.

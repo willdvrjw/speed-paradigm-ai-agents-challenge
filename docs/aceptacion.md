@@ -10,22 +10,22 @@ Se leyeron `AGENTS.md`, `agents/develop.md` y `agents/testing/DIRECTRICES.md`. A
 
 | ID | Requisito | Estado | Evidencia o comprobación pendiente |
 | --- | --- | --- | --- |
-| A01 | Aplicación Next.js real con TypeScript | PENDIENTE | Faltan implementación y dependencias. Verificar versiones exactas y `npm run build`. |
-| A02 | Tres agentes con Markdown y delegación real | PENDIENTE | Testing comprobó los tres Markdown y dos TOML válidos, y participó en la revisión independiente de la arquitectura de Develop. Todavía no hay archivos rastreados ni commits; faltan versión publicada y revisión del código. |
-| A03 | Testing devuelve fallos y Develop los corrige | PENDIENTE | Revisar una implementación real; registrar hallazgos, corrección y nueva ejecución sin inventar fallos. |
-| A04 | Base de datos gratuita Supabase o Firebase operativa | PENDIENTE | Orquestador gestiona provisión y acceso. Verificar plan gratuito, migración aplicada y persistencia tras recarga. |
+| A01 | Aplicación Next.js real con TypeScript | PASS | Next.js 16.4.6 y TypeScript 7.0.2 instalados. Develop ejecutó build de producción correcto; Testing ejecutó `npm run typecheck` y arrancó esa compilación con `npm start` (Ready). |
+| A02 | Tres agentes con Markdown y delegación real | PASS | Markdown y dos TOML versionados; delegación real a Develop y Testing y revisión independiente del código completada. El historial inspeccionado contiene 2 commits y el repositorio es público. |
+| A03 | Testing devuelve fallos y Develop los corrige | PENDIENTE | Revisión independiente real realizada sin detectar defectos de aplicación en las comprobaciones ejecutadas. No se inventa un fallo para forzar una corrección. Falta terminar integración y revisión funcional. |
+| A04 | Base de datos gratuita Supabase o Firebase operativa | PENDIENTE | Recurso Supabase Free real y migración aplicada con TLS verificado, RLS/políticas/restricciones presentes. Auth `anonymous_users=false` impide comprobar la sesión y persistencia del visitante. |
 | A05 | CRUD completo de tareas | PENDIENTE | Crear, consultar, editar, cambiar estado y borrar con confirmación, comprobando resultado persistido. |
-| A06 | Búsqueda, filtros y estados vacíos/carga/error | PENDIENTE | Verificar comportamiento real con datos del visitante y errores controlados. |
+| A06 | Búsqueda, filtros y estados vacíos/carga/error | PENDIENTE | Estado de error/reintento y render de carga revisados en navegador real. Búsqueda, filtros y vacío de datos reales esperan Auth anónima para el flujo completo. |
 | A07 | Validación y restricciones | PENDIENTE | Casos vacíos, espacios, longitudes límite, tipos/estados/prioridades inválidos; probar API y base de datos. |
-| A08 | Aislamiento de espacios | PENDIENTE | Dos identidades independientes; intentar leer, modificar, borrar e insertar como otro usuario. |
-| A09 | Accesibilidad y adaptación | PENDIENTE | Móvil/escritorio, teclado, etiquetas, foco visible, diálogos y anuncios de estado. |
-| A10 | Calidad reproducible | PENDIENTE | Compilación, tipos y pruebas significativas ejecutadas. Registrar comandos, versiones y resultados. |
-| A11 | Ausencia de claves API y secretos en repositorio | PENDIENTE | Revisar archivos rastreados, historial y bundle cliente; `.gitignore` existe, pero no hay repositorio todavía. |
-| A12 | Repositorio GitHub público o accesible | PENDIENTE | Falta URL real y comprobación del acceso del evaluador. |
-| A13 | Despliegue gratis en producción | PENDIENTE | Orquestador comprobó acceso CLI al espacio personal `willdvrs-projects`, plan Hobby. Todavía faltan aplicación publicada y URL de producción real; el acceso CLI no acredita despliegue. |
-| A14 | URL pública sin autenticación Vercel | PENDIENTE | GET sin cookies/Authorization y navegador privado sin sesión. Confirmar que no sea vista previa ni enlace de bypass. |
-| A15 | README con arranque y demostración | PENDIENTE | Faltan instrucciones reproducibles, variables por nombre y recorrido de evaluación. |
-| A16 | Credenciales de prueba si hay login | PENDIENTE | Diseño previsto sin formulario de login. Confirmar comportamiento final; si se mantiene, indicar que no se necesitan credenciales. |
+| A08 | Aislamiento de espacios | PENDIENTE | API sin sesión denegada; SELECT directo al rol anon denegado 42501. Faltan dos identidades anónimas reales y ataques de lectura/mutación/propietario entre ellas. |
+| A09 | Accesibilidad y adaptación | PENDIENTE | Chrome real: estructura/idioma/error/teclado/foco y no overflow a 320/390/768/1440 px PASS. Faltan diálogos y flujo completo con datos reales. |
+| A10 | Calidad reproducible | PENDIENTE | Tipos, 9 pruebas de reglas/Origin, auditoría npm y 1 prueba de documento/error/navegador pasaron. Faltan integración real y flujo completo de navegador con Auth anónima habilitada. |
+| A11 | Ausencia de claves API y secretos en repositorio | PASS | 2 commits, 49 snapshots únicos, 7 valores sensibles y prefijos de credenciales examinados sin coincidencias ni archivos prohibidos; 14 archivos cliente y 40 archivos del dry-upload sin fugas. Alcance y límites detallados abajo. |
+| A12 | Repositorio GitHub público o accesible | PASS | https://github.com/willdvrjw/speed-paradigm-ai-agents-challenge . GitHub API sin autenticación HTTP 200 informa `visibility:public`, rama main; README raw HTTP 200 con título Foco. |
+| A13 | Despliegue gratis en producción | PENDIENTE | Build producción READY `dpl_B3nUE5cHdYBNeBH2nasPtvXmYFm4`, commit `f3d8d5f`, en Hobby; preparado sin asignar dominio. No promovido porque falta validar Auth y CRUD real. |
+| A14 | URL pública sin autenticación Vercel | PENDIENTE | El URL de preparación devuelve 302 a Vercel SSO sin credenciales. No cumple entrega pública. Bypass de pruebas revocado; no se presenta enlace con bypass como producción. |
+| A15 | README con arranque y demostración | PASS | README real con requisitos, instalación, SQL, variables por nombre, comandos, arquitectura y recorrido de demostración; enlaza las evidencias sin inventar URL de producción. |
+| A16 | Credenciales de prueba si hay login | PASS | No existe formulario de login y el navegador no presenta un acceso Vercel en local. No se requieren credenciales de demostración; falta validar la creación automática de sesión real al habilitar Auth anónima. |
 | A17 | Cuatro respuestas cortas del reclutador | PENDIENTE | El texto exacto de las cuatro preguntas no fue incluido en el encargo. No inventarlas. |
 | A18 | Entrega mediante enlace personal | PENDIENTE | El enlace personal no fue incluido; preparar los entregables sin enviar mensajes ni formularios por iniciativa propia. |
 
@@ -137,3 +137,59 @@ Se prepararon `playwright.config.ts` y `tests/e2e/board.spec.ts` contra los comp
 Testing inspeccionó `supabase/migrations/202611230001_create_tasks.sql` antes de su aplicación. No encontró un bloqueo documental: transacción, propietario derivado de UID, restricciones de campos, RLS explícito con cuatro políticas, `anon` sin privilegios, UPDATE limitado a columnas editables y trigger con `search_path` fijo. La reasignación `owner_id` está denegada por los permisos de columna y también protegida por `WITH CHECK`; un error de esa prueba no se atribuirá solo a RLS.
 
 Esta revisión permite a Orquestador continuar con la aplicación de la migración al recurso nuevo autorizado. Aplicación, Auth anónima y pruebas directas siguen PENDIENTES. Se consultaron [PostgreSQL GRANT](https://www.postgresql.org/docs/current/sql-grant.html), [Row Security](https://www.postgresql.org/docs/current/ddl-rowsecurity.html) y [Triggers](https://www.postgresql.org/docs/current/trigger-definition.html).
+
+## Dictamen previo al despliegue de preparación
+
+Testing revisó los componentes, API y cliente Supabase completos. No encontró un defecto reproducible de aplicación en la inspección: `server-only`, clave publicable, identidad verificada por petición, propietario derivado en servidor, RLS y filtros propios, cookies HttpOnly/Lax/Secure en producción, comprobación Origin, JSON acotado y `no-store`. No se utiliza SDK Supabase en el navegador ni una clave administrativa para las tareas.
+
+| Comprobación ejecutada por Testing | Resultado |
+| --- | --- |
+| `npm run typecheck` | PASS, exit 0. |
+| `npm test` | PASS, 9/9, sin omisiones; incluye límites Unicode y caracteres de control. |
+| `npm audit --json` | PASS en esta consulta: 0 vulnerabilidades conocidas informadas, exit 0. No equivale a garantía absoluta. |
+| `npm start -- --hostname 127.0.0.1 --port 3000` | Servidor de producción Ready en 353 ms; Next.js 16.4.6. |
+| `npm run test:e2e -- tests/e2e/shell.spec.ts` | PASS, 1 prueba en Chrome real: documento español, estructura, error accesible, skip-link/foco y ausencia de overflow a 320/390/768/1440 px. |
+| Escaneo de `.next/static` contra valores configurados | PASS: 14 archivos y 12 valores comparados solo en memoria, 0 coincidencias; no se imprimieron valores. |
+| Revisión de `.artifacts/vercel-dry.json` y archivos de envío | PASS: 40 archivos regulares comparados contra 7 valores sensibles, 0 coincidencias y 0 archivos sensibles incluidos. El dry-run enumera además 3 directorios vacíos ignorados sin contenido. |
+
+La primera ejecución del test de documento falló por un selector ambiguo de Testing: Next.js añade un anunciador automático con `role=alert`. Se limitó el selector al elemento `main` y la segunda ejecución pasó; no se modificó aplicación ni se registra ese error de prueba como un fallo de Develop. Se inspeccionaron visualmente las capturas de escritorio y móvil generadas por la ejecución correcta, sin cortes de contenido ni desbordamiento.
+
+Testing leyó la evidencia de aplicación SQL `.artifacts/migration-result.json`: conexión cifrada con certificado comprobado, RLS habilitado, cuatro políticas y seis restricciones; SHA-256 `afa791278e7b40d77dda4d4ccc2018a2b767d55bd8275c1c16323af0ac92c1ed`. El archivo corresponde a la ejecución de Orquestador; todavía no se han ejecutado los ataques directos con usuarios anónimos porque la habilitación de Anonymous Sign-Ins sigue pendiente de la acción del usuario.
+
+**Dictamen:** apto para desplegar la compilación de producción sin asignar todavía el dominio principal. La promoción y aceptación funcional permanecen PENDIENTES de CRUD/recarga, aislamiento/RLS y flujo completo de navegador con Supabase real. No se autoriza afirmar que la demo está operativa basándose solo en esta revisión previa.
+
+### Comprobaciones adicionales sin crear usuarios
+
+Para avanzar sin consumir altas mientras Anonymous Sign-Ins sigue deshabilitado se separaron dos escenarios independientes y se ejecutó:
+
+```text
+TEST_BASE_URL=http://localhost:3000
+node --env-file-if-exists=.env.local --test --test-name-pattern="sin sesión|sin identidad" tests/integration/api.test.mjs tests/integration/rls.test.mjs
+tests 2; pass 2; fail 0; exit 0
+```
+
+Se comprobaron HTTP 401 al leer/crear sin sesión, 403 para Origin ausente/null/ajeno sin fijar cookies, 400 para JSON malformado y 413 para más de 8 KiB, todos con `no-store`. El SELECT directo a `public.tasks` con el rol `anon` devolvió error PostgreSQL `42501` y ninguna fila. No se ejecutaron en este comando los escenarios que crean identidades ni el CRUD con sesiones válidas.
+
+El servidor local acepta conexiones a `127.0.0.1`, pero Next.js genera en los handlers el origen canónico `http://localhost:3000`. Se reprodujo que Origin `127.0.0.1` da 403 y Origin `localhost` avanza a la comprobación de sesión. Se corrigió el origen predeterminado del arnés de Playwright a `localhost`, coherente con el README, sin relajar la protección de aplicación. En el despliegue de preparación, Orquestador comprobó que Origin con el hostname real sí avanza a Auth. Es un límite del alias local utilizado por el arnés, no evidencia de un fallo de persistencia.
+
+Testing comprobó el repositorio público mediante peticiones sin cookies ni Authorization: metadatos GitHub HTTP 200 con `visibility:public` y `default_branch:main`, y README raw HTTP 200 cuyo primer renglón es `# Foco — Un paso a la vez`. Se examinó el historial Git actual: 2 commits y 49 snapshots de archivos distintos comparados con 7 valores sensibles cargados solo en memoria, además de prefijos de credenciales, sin coincidencias. No hay `.env` real, `.tools/`, `.vercel/` ni `.artifacts/` versionados. Estos escaneos detectan las clases y valores examinados; no son una prueba universal de ausencia de cualquier secreto desconocido.
+
+## Dictamen al cierre de esta fase
+
+**PENDIENTE funcional. No hay un defecto de aplicación identificado que requiera otro cambio de Develop.** Las comprobaciones locales y estáticas ejecutadas pasaron dentro de su alcance. La habilitación de Auth anónima es un requisito externo todavía pendiente: Orquestador volvió a comprobar `settings.external.anonymous_users=false`. El usuario indicó que los términos ya estaban aceptados, pero todavía no consiguió acceder al panel de Supabase para activar Anonymous Sign-Ins. No se interpreta ese bloqueo como un PASS ni como un fallo reproducible del código.
+
+Orquestador creó un despliegue de producción de preparación en el espacio `willdvrs-projects` (Hobby):
+
+| Dato observado | Valor |
+| --- | --- |
+| Estado del build | READY |
+| ID | `dpl_B3nUE5cHdYBNeBH2nasPtvXmYFm4` |
+| Commit de aplicación subido | `f3d8d5f` |
+| URL de preparación | https://speed-paradigm-ai-agents-challenge-g6mgnzg9p-willdvrs-projects.vercel.app |
+| Dominio público/promoción | No asignado / no promovido |
+| Acceso HTTP sin sesión | 302 a Vercel SSO; no cumple publicación pública |
+| Repositorio público | https://github.com/willdvrjw/speed-paradigm-ai-agents-challenge |
+
+Las comprobaciones autenticadas de Orquestador sobre esa preparación devolvieron home 200 con Foco, GET de tareas sin sesión 401 con `no-store`, POST de sesión sin Origin 403 y POST con Origin correcto 503 debido al requisito de Auth. No prueban CRUD operativo ni reemplazan la visita pública privada exigida. Orquestador revocó mediante la API oficial el bypass temporal de pruebas, comprobó que no quedaban bypasses y eliminó su archivo local de estado; ningún secreto de acceso se registra aquí.
+
+El servidor de producción local se mantiene disponible en `http://localhost:3000` para retomar. Al habilitar Auth anónima, los siguientes pasos de Testing son ejecutar la integración completa, los ataques RLS entre dos identidades, y `npm run test:e2e` contra datos reales. Después corresponde probar el despliegue preparado y, si pasa, que Orquestador promueva y verifique HTTP y navegador limpios en la URL pública definitiva. CRUD, persistencia tras recarga, aislamiento autenticado y flujo completo de navegador continúan PENDIENTES hasta esas ejecuciones.

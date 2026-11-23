@@ -10,7 +10,7 @@ export default defineConfig({
   reporter: 'line',
   outputDir: 'test-results',
   use: {
-    baseURL: process.env.TEST_BASE_URL ?? 'http://127.0.0.1:3000',
+    baseURL: process.env.TEST_BASE_URL ?? 'http://localhost:3000',
     browserName: 'chromium',
     channel: process.env.PLAYWRIGHT_CHANNEL ?? 'chrome',
     headless: true,

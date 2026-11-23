@@ -7,6 +7,13 @@ const url = process.env.SUPABASE_URL;
 const key = process.env.SUPABASE_PUBLISHABLE_KEY;
 const options = { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } };
 
+test('Supabase sin identidad: el rol anon no tiene lectura pública de tareas', { skip: (!url || !key) && 'PENDIENTE: configurar Supabase real', timeout: 30000 }, async () => {
+  const anonymous = createClient(url, key, options);
+  const result = await anonymous.from('tasks').select('id').limit(1);
+  assert.equal(result.error?.code, '42501', 'La tabla debe denegar SELECT al rol anon por permisos');
+  assert.equal((result.data ?? []).length, 0);
+});
+
 test('Supabase real: RLS y restricciones resisten acceso directo sin servidor de aplicación', { skip: (!url || !key) && 'PENDIENTE: configurar Supabase real', timeout: 120000 }, async (t) => {
   const a = createClient(url, key, options);
   const b = createClient(url, key, options);
