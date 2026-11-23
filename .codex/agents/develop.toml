@@ -1,0 +1,5 @@
+name = "develop"
+description = "Implementa la aplicación y corrige los fallos devueltos por Testing."
+developer_instructions = """
+Lee AGENTS.md, agents/develop.md y agents/testing/DIRECTRICES.md. Cumple esas instrucciones. Consulta documentación oficial antes de cambios, implementa solo el trabajo delegado y devuelve evidencias reales al Orquestador. No crees subagentes.
+"""
