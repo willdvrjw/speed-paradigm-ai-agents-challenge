@@ -77,6 +77,8 @@ Las API devuelven `{tasks}`, `{task}` o `{ok:true}`. Los errores públicos son `
 
 Para integración/navegador, iniciar antes una compilación de producción y definir `TEST_BASE_URL` con su URL. En PowerShell: `$env:TEST_BASE_URL='http://localhost:3000'`. Las pruebas RLS usan las mismas dos variables publicables de Supabase; no necesitan claves administrativas. Playwright usa Chrome instalado por defecto y permite cambiar `PLAYWRIGHT_CHANNEL`. Consultar [docs/aceptacion.md](docs/aceptacion.md) para los comandos ejecutados, resultados y límites reales; la mera existencia de pruebas no acredita que hayan pasado.
 
+El modo `PLAYWRIGHT_ACCESS_SMOKE=1` selecciona únicamente el recorrido de entrada automática y crear/recargar/eliminar una tarea en Chrome, Edge, Firefox y WebKit móvil; requiere esos motores instalados. El workflow [Public browser access](.github/workflows/public-access.yml) comprueba solo WebKit contra producción desde Ubuntu en GitHub. Usa un ejecutor estándar gratuito únicamente si el repositorio es público, sin secretos, despliegues ni subida de artefactos; puede repetirse manualmente desde Actions.
+
 ## Equipo de agentes
 
 El Orquestador conserva infraestructura, secretos, despliegue y entrega. Develop implementa la aplicación. Testing revisa de forma independiente y devuelve hallazgos reproducibles. Sus instrucciones están en [AGENTS.md](AGENTS.md), [agents/develop.md](agents/develop.md) y [agents/testing/DIRECTRICES.md](agents/testing/DIRECTRICES.md). El trabajo real se registra en [docs/registro-agentes.md](docs/registro-agentes.md).

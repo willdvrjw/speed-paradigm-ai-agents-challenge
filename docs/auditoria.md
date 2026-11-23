@@ -2,11 +2,13 @@
 
 Responsable: Testing, independiente de Develop. Fecha: 2026-11-23, America/Bogota.
 
-**Dictamen: requisitos técnicos comprobados, PASS. Entrega al reclutador, PENDIENTE de dos datos que no fueron proporcionados: las cuatro preguntas y el enlace personal.** Esta auditoría volvió a ejecutar las comprobaciones; no se limita a citar la aceptación anterior. La referencia literal es [docs/enunciado.md](enunciado.md).
+**Dictamen: requisitos técnicos comprobados, PASS. Entrega al reclutador, PENDIENTE de confirmar las respuestas personales y realizar el envío único.** Orquestador confirmó que las cuatro preguntas y el enlace personal ya fueron recibidos y revisados privadamente; no se publican su texto, enlace ni token. Esta auditoría volvió a ejecutar las comprobaciones; no se limita a citar la aceptación anterior. La referencia literal es [docs/enunciado.md](enunciado.md).
+
+**Estado posterior de acceso:** versión b2e098a publicada en la URL principal, con cuatro configuraciones de navegador aprobadas: Chrome, Edge y Firefox en Windows, y WebKit con emulación móvil en Linux mediante CI real. Las ayudas sin JavaScript/cookies están verificadas. El bloqueo de WebKit Windows y la primera CI cancelada se conservan como historial; no se cuentan como éxitos ni como fallos de aplicación. No se afirma haber probado Safari en un iPhone físico ni todos los navegadores, dispositivos, países o redes.
 
 Aplicación de producción: https://speed-paradigm-ai-agents-challenge.vercel.app . Repositorio público: https://github.com/willdvrjw/speed-paradigm-ai-agents-challenge . No hacen falta usuario ni contraseña: la interfaz no tiene formulario de login y crea una sesión anónima aislada.
 
-La revisión comenzó en HEAD `40f373e`. `git diff f3d8d5f HEAD -- app components lib next.config.ts package.json package-lock.json supabase` no mostró cambios: la fuente de aplicación coincide con la del despliegue `dpl_B3nUE5cHdYBNeBH2nasPtvXmYFm4`. La corrección de esta auditoría fue de configuración Vercel; Testing no modificó código de aplicación ni infraestructura.
+La auditoría literal inicial comenzó en HEAD `40f373e`; en esa fase la fuente de aplicación coincidía con `f3d8d5f` y el despliegue `dpl_B3nUE5cHdYBNeBH2nasPtvXmYFm4`. Esa comparación se conserva como evidencia histórica. La ampliación posterior de acceso sí incluye correcciones de aplicación de Develop: fuente `b2e098a`, despliegue `dpl_DmwUnKjZstWcL3xebGTRiPDg8nFS`, promovido a la misma URL pública. Testing conserva independencia y solo modifica pruebas/documentación.
 
 ## Matriz literal y evidencia actual
 
@@ -19,7 +21,7 @@ Las citas breves pertenecen al texto recibido; las comprobaciones de calidad adi
 | E03 | «Orquestador: el agente principal, con su CLAUDE.md (o AGENTS.md), que reparte el trabajo» | PASS | `AGENTS.md` rastreado y accesible públicamente; delegaciones reales del Orquestador a Develop y Testing y responsabilidades registradas en `docs/registro-agentes.md`. |
 | E04 | «Develop: un subagente que programa, con su propio .md de cómo programar» | PASS | `agents/develop.md` y `.codex/agents/develop.toml` versionados; Develop implementó los archivos reales de aplicación y comunicó sus comprobaciones. |
 | E05 | «Testing: un subagente con un .md de DIRECTRICES que Develop tiene que cumplir» | PASS | `agents/testing/DIRECTRICES.md` y su TOML versionados; Develop recibió esas directrices y Testing revisó su resultado real sin editar aplicación. |
-| E06 | «Testing revisa lo que hace Develop y le devuelve los fallos hasta que todo pasa» | PASS | Revisión y pruebas independientes reales: todas las comprobaciones técnicas de esta auditoría pasan. No se encontraron fallos de aplicación que requirieran devolución/corrección de Develop; no se afirma un ciclo ficticio. El hallazgo real de infraestructura y su corrección se describen como AUD-01. |
+| E06 | «Testing revisa lo que hace Develop y le devuelve los fallos hasta que todo pasa» | PASS | Revisión real; en la ampliación posterior Testing reprodujo dos barreras de uso (sin JavaScript y cookies desactivadas), Develop las corrigió en b2e098a y Testing comprobó 2/2 regresiones correctas localmente y por HTTPS. AUD-01 sigue identificado por separado como infraestructura. |
 | E07 | «haz una app del tema que quieras (tema libre)» | PASS | Foco es un tablero funcional de tareas en español; Chrome comprobó el recorrido completo con datos reales. |
 | E08 | «con una base de datos gratuita: Firebase o Supabase» | PASS | Supabase Free real, estado available comprobado por Orquestador; pruebas directas contra su PostgreSQL/RLS y persistencia desde la app pasan. |
 | E09 | «publicada gratis en Vercel (o similar)» | PASS | Despliegue READY/production en Vercel Hobby, verificado por Orquestador; URL de producción HTTP 200 y flujo HTTPS funcional. |
@@ -30,13 +32,13 @@ Las citas breves pertenecen al texto recibido; las comprobaciones de calidad adi
 | E14 | «No hace falta gastar dinero: usa planes gratuitos» | PASS | Planes actuales comprobados por Orquestador: Vercel Hobby y Supabase Free/available. No se aceptaron costes ni se actualizó un plan. |
 | E15 | «No subas claves de API al repositorio» | PASS | Nuevo escaneo de Testing sobre árbol rastreado, cuatro commits e historial: cero coincidencias con las siete claves/credenciales configuradas comparadas en memoria, incluidas claves publicables reales, y cero patrones de credenciales o archivos prohibidos. Véase el alcance del escaneo abajo. |
 | E16 | «No hace falta vídeo» | PASS | No se considera un entregable obligatorio ni se sustituye la app por un vídeo. La evidencia es URL real, código, pruebas y dictamen; Playwright tiene video desactivado. |
-| E17 | «Al entregar, con tu enlace personal» | PENDIENTE | El enlace personal no fue proporcionado. No se inventó, no se envió un formulario ni se publicará un enlace personal sensible en Git. |
+| E17 | «Al entregar, con tu enlace personal» | PENDIENTE | Enlace recibido y revisado privadamente por Orquestador. Queda pendiente el envío único; el enlace y su token no se publican en Git ni se envía un formulario por iniciativa de Testing. |
 | E18 | «el enlace de la app» | PASS | URL real de producción incluida al principio de este informe y en README. |
 | E19 | «el repositorio de GitHub (público o con acceso para nosotros), con los .md de los agentes» | PASS | GitHub API sin autenticación devuelve 200 y visibility=public. Los tres Markdown, ambos TOML y README devuelven raw HTTP 200 y coincidían con los archivos locales al revisarlos. |
 | E20 | «un usuario y una contraseña de prueba, si la app tiene login» | PASS | La condición no aplica: no hay formulario de login ni contraseña. Chrome accede directamente y la sesión anónima se establece automáticamente. |
-| E21 | «las respuestas a 4 preguntas cortas» | PENDIENTE | No se recibió el texto de las cuatro preguntas. No se inventaron respuestas ni se enviaron mensajes al reclutador. |
+| E21 | «las respuestas a 4 preguntas cortas» | PENDIENTE | Las cuatro preguntas fueron recibidas y revisadas privadamente por Orquestador. Faltan confirmar las respuestas personales y realizar el envío único; no se publican las preguntas ni se inventan respuestas. |
 
-## Ejecuciones nuevas
+## Ejecuciones de la auditoría literal inicial
 
 Se usó Node.js 24.22.3 portable del proyecto y npm 11.19.1, con PATH y caché solo del proceso. Las invocaciones npm se realizaron mediante `.tools/node-v24.22.3-win-x64/npm.cmd`; en un entorno con Node 24 instalado equivalen a los comandos siguientes.
 
@@ -85,7 +87,7 @@ Orquestador consultó documentación oficial y desactivó Vercel Authentication 
 
 Develop añadió únicamente documentación reproducible al README: cinco pasos para Supabase Free/Auth anónima, Vercel Hobby, variables de Production, desactivación de Vercel Authentication y visita privada a producción. Testing revisó ese diff y coincide con la configuración y el flujo comprobados. No cambió código de aplicación y no se necesitó otro build.
 
-No aparecieron defectos reproducibles de aplicación que exigieran un cambio de Develop. Los ajustes históricos de expectativas del arnés se distinguen en [aceptacion.md](aceptacion.md); esta auditoría no inventa una devolución de fallos ni un ciclo de corrección de aplicación. El requisito de tres agentes se acredita con instrucciones, delegación, código y revisión reales.
+En la auditoría literal inicial no aparecieron defectos reproducibles de aplicación que exigieran un cambio de Develop. La ampliación posterior sí produjo dos correcciones verificadas, descritas a continuación. Los ajustes históricos de expectativas del arnés se distinguen en [aceptacion.md](aceptacion.md) y no se atribuyen a la aplicación. El requisito de tres agentes se acredita con instrucciones, delegación, código y revisión reales.
 
 El build emitió una advertencia por un package-lock ajeno al repositorio que Next.js ignoró; build y tipos pasaron. El primer intento de reinicio local encontró el hijo Node anterior aún ocupando el puerto: se verificaron PID y ruta dentro de este proyecto, se detuvo ese proceso y se restauró el servidor local con la compilación nueva. Fue una incidencia del control de procesos local, sin fallo de aplicación ni impacto en producción.
 
@@ -102,4 +104,57 @@ Se verificó la configuración y disponibilidad observadas en esta auditoría; l
 
 ## Entrega
 
-Los enlaces técnicos están preparados y comprobados. No hacen falta credenciales manuales ni vídeo. Falta recibir el texto exacto de las cuatro preguntas y el enlace personal para completar el envío del reclutador; este informe no sustituye ese envío y no afirma que se haya realizado.
+Los enlaces técnicos están preparados y comprobados. No hacen falta credenciales manuales ni vídeo. Las cuatro preguntas y el enlace personal ya fueron recibidos y revisados privadamente por Orquestador. Quedan pendientes la confirmación de respuestas personales y el envío único; este informe no publica esos datos, no sustituye ese envío y no afirma que se haya realizado.
+
+## Ampliación de acceso desde navegadores actuales
+
+Esta fase responde a la petición posterior de facilitar el acceso público desde distintos navegadores y herramientas. No convierte un cambio de idioma/zona horaria o User-Agent en una prueba desde otro país, IP o red.
+
+### Barreras reproducidas y corregidas
+
+Sobre la producción anterior, Testing ejecutó `tests/e2e/access-requirements.spec.ts`: 2 fallos reproducidos. Con JavaScript desactivado faltaba una explicación accionable y quedaba una preparación indefinida; con `navigator.cookieEnabled=false` faltaba una indicación sobre cookies antes de intentar abrir el espacio. Develop añadió aviso `noscript` con recarga, suprimió el indicador indefinido sin JavaScript y añadió ayuda/guardia de cookies, manteniendo sesión privada y RLS.
+
+Las mismas dos regresiones pasaron en el build local nuevo (2/2, 3.2 s) y en la preparación HTTPS `b2e098a` (2/2, 6.3 s), sin crear usuarios en los casos de ayuda. Se ejecutaron build y typecheck correctos; un primer fallo TypeScript procedía de una variable `document` del test nuevo que sombreaba el DOM, se corrigió en el arnés y no se atribuye a Develop. La posible objeción a `AbortSignal.timeout()` como incompatibilidad con Safari 16.4 se descartó al consultar el [BCD oficial de MDN](https://github.com/mdn/browser-compat-data/blob/main/api/AbortSignal.json): está disponible desde Safari 16 y Firefox 100; Chrome 103 tenía una diferencia en el tipo de error que el catch genérico ya tolera.
+
+### Smoke real por navegador
+
+La configuración optativa `PLAYWRIGHT_ACCESS_SMOKE=1` ejecuta únicamente `access-smoke.spec.ts`. Cada caso usa un contexto vacío sin Vercel/bypass, comprueba sesión automática y cookies privadas de primera parte, crea una tarea propia, recarga, la elimina y confirma su ausencia. También verifica cero orígenes HTTP externos en el cliente, sin simular persistencia. Las zonas/idiomas solo son configuraciones del navegador.
+
+| Navegador y entorno | Configuración del caso | Estado y evidencia |
+| --- | --- | --- |
+| Chrome 158.0.8127.37, Windows | en-US, UTC, escritorio | PASS: smoke HTTPS completo sobre b2e098a; captura propia inspeccionada. |
+| Edge 158.0.4370.33, Windows | es-ES, Europe/Madrid, escritorio | PASS: smoke HTTPS completo sobre b2e098a; captura propia inspeccionada. |
+| Firefox 159.0 oficial Playwright, Windows | fr-FR, Europe/Paris, escritorio | PASS: un caso completo en 14.4 s al ejecutar fuera del sandbox de herramientas, con perfil temporal nuevo y protecciones/TLS normales. |
+| WebKit móvil, Ubuntu 24.04 en imagen oficial Playwright 1.65.1 | ja-JP, Asia/Tokyo, emulación iPhone 13 contra URL canónica pública | PASS: [CI 45229713210](https://github.com/willdvrjw/speed-paradigm-ai-agents-challenge/actions/runs/45229713210), job 137885614975, smoke 1/1 en 7.6 s. La primera CI cancelada se conserva separadamente abajo. |
+
+Firefox/WebKit se instalaron gratis mediante el CLI oficial en `.tools/playwright-browsers`, ignorado por Git. Firefox no arrancaba dentro del sandbox (timeout) y pasó fuera de él sin acceder al perfil del usuario. WebKit Windows quedó como límite de TLS de ese motor/entorno; no se desactivó verificación ni se importaron CAs al sistema. La CI es un workflow de pruebas sin secretos ni despliegue, que no declara cachés ni subida de artefactos, con runner estándar Ubuntu de repositorio público, acciones fijadas por SHA y permisos de lectura.
+
+### Resultado remoto, promoción y cierre
+
+Testing revisó estáticamente `.github/workflows/public-access.yml` y obtuvo el resultado real mediante el conector GitHub y una lectura REST pública actualizada. La CI utilizó commit de workflow `bc38ed1`, run `45227720380`, job `137878600725`, Ubuntu 24.04 y Node 24.22.3. El objetivo era exclusivamente WebKit móvil contra producción canónica; no repitió Chrome, Edge o Firefox ya aprobados.
+
+El primer job comenzó `2026-11-23T17:26:43Z` y terminó `2026-11-23T17:34:57Z`, conclusión `cancelled`. Checkout, setup-node y npm ci pasaron. `npx playwright install --with-deps webkit` quedó `cancelled` y `Verify public WebKit mobile access` quedó `skipped`: no llegó a enviar un caso de aplicación. Los logs registran `Installing dependencies...` a las `17:26:58Z` y `The operation was canceled.` a las `17:34:56Z`, al cierre del límite de ocho minutos configurado. Se conserva como límite de preparación de entorno, no como un fallo de aplicación ni como PASS de Safari/WebKit.
+
+Orquestador consultó [Playwright Docker](https://playwright.dev/docs/docker) y corrigió únicamente la preparación del mismo workflow, usando la imagen oficial Microsoft `v1.65.1-noble` con browsers/dependencias ya instalados, versión igual al SDK y fijada por digest `sha256:1507cbfc550a63a6b7396791ca4f00df17beb56342d2447b3f106c306f525579`. Testing revisó ese cambio estático: sin apt/install durante el job, sin cambios de app, sin nuevos proveedores, permisos de lectura y timeout de cinco minutos. Esta fue la única ejecución adicional tras esa corrección concreta.
+
+La [CI final 45229713210](https://github.com/willdvrjw/speed-paradigm-ai-agents-challenge/actions/runs/45229713210), commit de workflow `2478547`, job `137885614975`, terminó **success**. Testing comprobó los pasos y logs reales mediante el conector GitHub: imagen fijada correcta, Node `v24.22.3`, `Running 1 test using 1 worker` y `1 passed (7.6s)` a las `17:38:32Z`. El smoke WebKit móvil ejecutó la URL canónica pública con cero cookies iniciales, sesión automática, crear/recargar/eliminar su tarea, cookies privadas de primera parte y cero orígenes externos HTTP del cliente. No hubo bypass ni simulación de persistencia y la tarea quedó eliminada.
+
+Orquestador promovió la misma compilación b2e098a, `dpl_DmwUnKjZstWcL3xebGTRiPDg8nFS`, y comprobó que la URL principal apunta exactamente a ella: GET sin cookies/Authorization/bypass devuelve 200 sin redirección y contiene la ayuda nueva sin JavaScript. Los tres smokes aprobados habían ejecutado esa compilación HTTPS preparada sin bypass; no se repite CRUD después de cambiar solo el alias. Las tareas sintéticas se limpiaron con sus propias sesiones.
+
+Resultado de la ampliación: **4 configuraciones de navegador aprobadas, pertenecientes a 3 familias de motor**. Chrome y Edge comparten Chromium; Firefox usa Gecko y la CI final ejecutó WebKit. El intento Windows de WebKit permanece no verificado en ese entorno específico. Las dos ayudas pasan 2/2 local y 2/2 por HTTPS, y el typecheck final del arnés tras acotar lanzamiento a 20 s y manejar las promesas de navegación también pasa. No hubo cambios de aplicación para resolver limitaciones del sandbox/TLS/CI. Los resultados y pruebas de la auditoría literal anterior permanecen identificados por su fase.
+
+Comandos específicos de esta ampliación (Node 24 del proyecto):
+
+```powershell
+$env:PLAYWRIGHT_BROWSERS_PATH=Join-Path (Get-Location) '.tools/playwright-browsers'
+node node_modules/playwright/cli.js install firefox webkit --no-progress --no-remove
+$env:TEST_BASE_URL='https://speed-paradigm-ai-agents-challenge-fzz97it19-willdvrs-projects.vercel.app'
+npm run test:e2e -- tests/e2e/access-requirements.spec.ts
+$env:PLAYWRIGHT_ACCESS_SMOKE='1'
+npm run test:e2e
+node node_modules/playwright/cli.js test --project=firefox-desktop
+```
+
+La primera ejecución de cuatro casos dio 2 PASS y dos límites de entorno; Firefox pasó después en el único intento permitido fuera del sandbox, con perfil temporal nuevo y lanzamiento limitado a 20 s. El intento local de WebKit con CAs ya existentes mantuvo TLS activo y no resolvió el bloqueo; la CI final sí ejecutó y aprobó el caso real. Las capturas exitosas de Chrome y Edge se abrieron e inspeccionaron. La CI no sube artefactos: no se afirma una inspección visual manual de su captura de WebKit. Los binarios, certificados públicos de prueba y capturas locales permanecen ignorados por Git. Se detuvo únicamente el servidor local de pruebas tras verificar su PID y ruta de este repositorio.
+
+Fuentes consultadas antes de ajustar pruebas: [browsers](https://playwright.dev/docs/browsers), [emulation](https://playwright.dev/docs/emulation), [browser contexts](https://playwright.dev/docs/browser-contexts) y [verificación de certificados curl](https://curl.se/docs/sslcerts.html). Se conserva el límite de la comprobación: WebKit automatizado no equivale a probar un Safari instalado en un iPhone físico, y ningún conjunto finito confirma todos los navegadores/versiones, países, proveedores de red o políticas corporativas. El sitio sigue requiriendo JavaScript, cookies propias y conectividad con el servicio gratuito; ahora explica cómo recuperar esos requisitos sin quitar su aislamiento de datos.
