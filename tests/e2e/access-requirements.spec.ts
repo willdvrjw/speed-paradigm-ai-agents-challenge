@@ -30,3 +30,31 @@ test('explica cookies desactivadas sin intentar crear sesiones', async ({ page, 
   await expect(page.getByRole('main').getByRole('alert')).toContainText(/cookies/i);
   expect(privateRequests).toBe(0);
 });
+
+test('sesión aparentemente creada sin cookie retenida explica cómo recuperarla sin nuevas altas automáticas', async ({ page }) => {
+  let sessions = 0;
+  let reads = 0;
+  await page.route('**/api/session', (route) => { sessions++; return route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' }); });
+  await page.route('**/api/tasks', (route) => { reads++; return route.fulfill({ status: 401, contentType: 'application/json', body: '{"error":"Sesión no retenida"}' }); });
+  await page.goto('/');
+  await expect(page.getByRole('main').getByRole('alert')).toContainText('No pudimos conservar tu sesión');
+  await expect(page.getByRole('main').getByRole('alert')).toContainText('Permite las cookies');
+  await expect(page.getByRole('button', { name: 'Nueva tarea', exact: true })).toBeDisabled();
+  expect(sessions).toBe(1);
+  expect(reads).toBe(1);
+});
+
+test('rechazo de sesión conserva el error original y no continúa hacia tareas', async ({ page }) => {
+  let sessions = 0;
+  let reads = 0;
+  await page.route('**/api/session', (route) => { sessions++; return route.fulfill({ status: 401, contentType: 'application/json', body: '{"error":"Conserva tu espacio original"}' }); });
+  await page.route('**/api/tasks', (route) => { reads++; return route.abort(); });
+  await page.goto('/');
+  await expect(page.getByRole('main').getByRole('alert')).toContainText('Conserva tu espacio original');
+  expect(sessions).toBe(1);
+  expect(reads).toBe(0);
+  await page.getByRole('button', { name: 'Reintentar', exact: true }).click();
+  await expect(page.getByRole('main').getByRole('alert')).toContainText('Conserva tu espacio original');
+  expect(sessions).toBe(2);
+  expect(reads).toBe(0);
+});

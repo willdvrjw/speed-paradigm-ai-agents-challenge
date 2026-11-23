@@ -1,86 +1,90 @@
 # Foco — Un paso a la vez
 
-Tablero personal de tareas en español, sin formulario de registro. Permite crear, consultar y editar tareas, cambiar su estado, buscar por título/descripción, filtrar por estado/prioridad y eliminar con confirmación. Cada visitante usa un espacio aislado con datos reales en Supabase.
+Tablero de tareas en español construido con Next.js y Supabase. Cada navegador recibe automáticamente su propio espacio de demostración, con tareas persistentes y acceso aislado.
 
-Aplicación publicada: [Abrir Foco](https://speed-paradigm-ai-agents-challenge.vercel.app).
+**[Abrir la aplicación](https://speed-paradigm-ai-agents-challenge.vercel.app)** · **[Repositorio público](https://github.com/willdvrjw/speed-paradigm-ai-agents-challenge)**
 
-Repositorio: [speed-paradigm-ai-agents-challenge](https://github.com/willdvrjw/speed-paradigm-ai-agents-challenge).
+No necesitas usuario, contraseña, cuenta de Vercel ni instalación. Puedes abrir el enlace en una ventana privada para probar un espacio nuevo.
 
-La aplicación está desplegada en producción con Supabase real. No se necesitan credenciales de demostración: crea una sesión anónima automáticamente. Las comprobaciones ejecutadas y sus límites se documentan en [docs/aceptacion.md](docs/aceptacion.md).
+## Demo en dos minutos
 
-Puedes compartir directamente el enlace de producción: no exige cuenta de Vercel, correo, contraseña, instalación ni permiso de ubicación. Cada navegador abre automáticamente un espacio propio, también en navegación privada. La interfaz solo hace peticiones al dominio de la aplicación; no necesita cookies de terceros.
+1. Crea una tarea con título, descripción y prioridad; recarga para comprobar que permanece.
+2. Muévela entre **Pendiente**, **En curso** y **Hecha**, y edita sus detalles.
+3. Combina búsqueda por título/descripción con filtros de estado y prioridad; usa **Limpiar filtros** para volver al tablero completo.
+4. Elimina una tarea: **Cancelar** la conserva y **Eliminar tarea** confirma el borrado.
+5. Abre otro perfil o ventana privada: sus tareas están separadas de las del primer visitante.
 
-Usa un navegador moderno con JavaScript y cookies de este sitio permitidos. La base de compatibilidad de Next.js es Chrome/Edge/Firefox 111+ y Safari 16.4+. La aplicación no configura restricciones por país o IP. Esto no garantiza acceso desde todas las redes, herramientas sin navegador o navegadores antiguos; siguen aplicando la conectividad y la disponibilidad y los límites de los proveedores gratuitos.
+La interfaz se adapta a móvil y escritorio, admite teclado y muestra estados vacíos, carga y errores con reintento. Los cambios se anuncian de forma accesible.
+
+## Equipo de tres agentes
+
+| Rol | Responsabilidad | Instrucciones |
+| --- | --- | --- |
+| Orquestador | Define requisitos, delega, coordina revisiones y publica. | [AGENTS.md](AGENTS.md) |
+| Develop | Implementa la aplicación y corrige los hallazgos. | [agents/develop.md](agents/develop.md) |
+| Testing | Revisa de forma independiente y ejecuta las pruebas. | [agents/testing/DIRECTRICES.md](agents/testing/DIRECTRICES.md) |
+
+Las definiciones de subagentes están en [.codex/agents/](.codex/agents/). El [registro de agentes](docs/registro-agentes.md) conserva las delegaciones, revisiones y correcciones reales.
+
+## Stack y datos
+
+- **Next.js App Router, React y TypeScript estricto**, con estilos propios y sin dependencias visuales externas.
+- **Supabase PostgreSQL y Auth anónima**, accedidos desde Route Handlers del mismo origen. No hay formulario de registro.
+- **Aislamiento en la base de datos mediante RLS**, propietario verificado por petición y restricciones de título, descripción, estado y prioridad.
+- **Sesión en cookies HttpOnly**, SameSite=Lax y Secure en producción; validación de Origin en mutaciones y respuestas privadas `no-store`.
+
+El cliente no recibe claves administrativas ni almacena tokens en localStorage. Arquitectura, API y fuentes: [docs/arquitectura.md](docs/arquitectura.md) y [docs/documentacion.md](docs/documentacion.md).
 
 ## Arranque local
 
-Requisitos: Node.js 24, npm y un proyecto Supabase Free. Las versiones exactas de dependencias están fijadas en `package.json` y `package-lock.json`.
+Requisitos: **Node.js 24**, npm y un proyecto **Supabase Free**. Las versiones están fijadas en `package.json` y `package-lock.json`.
 
-1. Clonar el repositorio y ejecutar `npm ci`.
-2. Crear un proyecto Supabase gratuito y habilitar **Anonymous Sign-Ins** en la configuración de Auth.
-3. Ejecutar [supabase/migrations/202611230001_create_tasks.sql](supabase/migrations/202611230001_create_tasks.sql) en el SQL Editor del proyecto, o aplicar esa migración con el flujo habitual de Supabase CLI.
-4. Copiar `.env.example` a `.env.local`. Configurar únicamente `SUPABASE_URL` y `SUPABASE_PUBLISHABLE_KEY` con la URL y clave publicable del proyecto. La aplicación rechaza claves administrativas.
-5. Ejecutar `npm run dev` y abrir http://localhost:3000.
+1. Clona el repositorio y entra en la carpeta:
 
-Para probar la compilación de producción, ejecutar `npm run build` y después `npm start`. La aplicación no requiere fuentes remotas, imágenes externas ni servicios de IA.
+   ```sh
+   git clone https://github.com/willdvrjw/speed-paradigm-ai-agents-challenge.git
+   cd speed-paradigm-ai-agents-challenge
+   npm ci
+   ```
 
-No versionar `.env.local`, `.vercel/`, `.tools/`, claves o informes locales. Si faltan variables o Supabase no está disponible, el tablero muestra un error con reintento; no sustituye el servicio por tareas ficticias o almacenamiento local.
+2. En tu proyecto Supabase, habilita **Anonymous Sign-Ins** y aplica [la migración SQL](supabase/migrations/202611230001_create_tasks.sql) desde su SQL Editor.
+3. Copia `.env.example` a `.env.local` y configura las dos variables de servidor: `SUPABASE_URL` y `SUPABASE_PUBLISHABLE_KEY`. Usa la clave publicable del proyecto; conserva los valores fuera de Git.
+4. Ejecuta `npm run dev` y abre http://localhost:3000.
 
-## Despliegue gratuito y acceso público
+Para ejecutar la versión de producción local, usa `npm run build` y después `npm start`. Si falta configuración o falla la base de datos, la aplicación muestra un error; no reemplaza la persistencia por datos ficticios.
 
-1. Usar **Supabase Free** con la migración aplicada y **Anonymous Sign-Ins** habilitado, como se explica en el arranque local.
-2. En un espacio **Vercel Hobby**, importar este repositorio desde GitHub. Usar la raíz del repositorio, el preset Next.js y Node.js 24; mantener los planes gratuitos.
-3. Configurar para **Production** las variables de servidor `SUPABASE_URL` y `SUPABASE_PUBLISHABLE_KEY`, sin prefijo `NEXT_PUBLIC_` ni claves administrativas. Desplegar la rama `main` en el entorno **Production**; si se cambian variables después, crear un nuevo despliegue para aplicarlas.
-4. En el proyecto de Vercel, abrir **Settings › Deployment Protection**, desactivar **Vercel Authentication** y guardar.
-5. Copiar la URL principal de producción que muestra Vercel y abrirla en una ventana privada sin haber iniciado sesión en Vercel. Debe mostrar Foco, permitir crear una tarea y conservarla al recargar. Si pide iniciar sesión en Vercel, corregir la protección antes de entregar.
+## Pruebas y evidencias
 
-Entregar la URL principal de producción indicada al comienzo de este README y el enlace del repositorio. El [enunciado original](docs/enunciado.md) exige acceso público; las fuentes oficiales consultadas están en [docs/documentacion.md](docs/documentacion.md) y las comprobaciones reales en [docs/aceptacion.md](docs/aceptacion.md).
-
-## Recorrido de demostración
-
-1. Abrir la aplicación: aparece un espacio vacío propio.
-2. Crear una tarea con título y prioridad. Recargar y comprobar que se conserva.
-3. Cambiar el estado desde la tarjeta y editar título, descripción o prioridad.
-4. Combinar búsqueda y filtros; limpiar filtros para recuperar el tablero.
-5. Eliminar: cancelar conserva la tarea; confirmar la elimina también tras recargar.
-6. Abrir otro perfil de navegador o una ventana privada: ese visitante tiene un espacio distinto y no ve las tareas del primero.
-
-Las tareas se guardan en PostgreSQL. El navegador conserva la sesión en cookies HttpOnly; al borrar esas cookies se pierde el acceso a ese espacio. No se ofrece recuperación de cuenta ni sincronización entre dispositivos. Los proyectos gratuitos pueden pausarse por inactividad y las altas anónimas están sujetas a los límites de Supabase.
-
-## Arquitectura y seguridad
-
-- **Next.js App Router + TypeScript estricto**: página sin datos privados prerenderizados; componentes React con estados de carga, vacío y error, navegación por teclado, foco visible, diálogos nativos y anuncios de resultados.
-- **API del mismo origen**: Route Handlers validan entradas y verifican cada usuario con `getUser()`. El navegador no instancia el SDK Supabase ni recibe tokens en JSON o localStorage.
-- **Supabase SSR solo servidor**: cliente por petición con clave publicable; cookies HttpOnly, SameSite=Lax y Secure en producción. No se usa `service_role` para operar el tablero.
-- **PostgreSQL y RLS**: propietario derivado de la identidad verificada; políticas SELECT/INSERT/UPDATE/DELETE por `auth.uid()`, permisos mínimos de columnas, restricciones de datos e índice por propietario/fecha.
-- **Mutaciones**: Origin exacto obligatorio, cuerpos JSON limitados a 8 KiB y campos desconocidos rechazados. Las respuestas de sesión y tareas incluyen `Cache-Control: no-store`.
-
-Los módulos puros de reglas están en `lib/tasks.ts` y `lib/security.ts`; la integración permanece bajo `lib/server/`. El diseño y las decisiones completas están en [docs/arquitectura.md](docs/arquitectura.md).
-
-| Método | Ruta | Resultado |
-| --- | --- | --- |
-| POST | `/api/session` | Crea o reanuda el espacio; devuelve `{ok:true}`. |
-| GET / POST | `/api/tasks` | Lista tareas propias / crea una tarea. |
-| GET / PATCH / DELETE | `/api/tasks/[id]` | Consulta, edita o elimina una tarea propia. |
-
-Las API devuelven `{tasks}`, `{task}` o `{ok:true}`. Los errores públicos son `{error,fields?}` con 400 (entrada inválida), 401 (sesión), 403 (origen), 404 (tarea ausente/ajena), 413 (cuerpo excesivo) o 503 (servicio no disponible). No muestran SQL ni credenciales.
-
-## Comprobaciones
-
-| Comando | Alcance |
+| Comando | Verifica |
 | --- | --- |
-| `npm run typecheck` | Genera tipos de rutas y comprueba TypeScript. |
-| `npm run build` | Compilación de producción y comprobación de tipos. |
-| `npm test` | Reglas y seguridad con el runner de Node. |
-| `npm run test:integration` | API real, persistencia y ataques de aislamiento/RLS. |
-| `npm run test:e2e` | Navegador real con Playwright, escritorio y móvil. |
+| `npm run typecheck` | Tipos de rutas y TypeScript. |
+| `npm run build` | Compilación de producción. |
+| `npm test` | Reglas de validación y seguridad. |
+| `npm run test:integration` | API real, persistencia y aislamiento/RLS. |
+| `npm run test:e2e` | Flujos en navegador, teclado, móvil, errores y recuperación. |
 
-Para integración/navegador, iniciar antes una compilación de producción y definir `TEST_BASE_URL` con su URL. En PowerShell: `$env:TEST_BASE_URL='http://localhost:3000'`. Las pruebas RLS usan las mismas dos variables publicables de Supabase; no necesitan claves administrativas. Playwright usa Chrome instalado por defecto y permite cambiar `PLAYWRIGHT_CHANNEL`. Consultar [docs/aceptacion.md](docs/aceptacion.md) para los comandos ejecutados, resultados y límites reales; la mera existencia de pruebas no acredita que hayan pasado.
+Las pruebas de integración y navegador requieren una aplicación real iniciada y `TEST_BASE_URL` definido. En PowerShell: `$env:TEST_BASE_URL='http://localhost:3000'`. Las pruebas RLS usan las mismas variables publicables de Supabase, sin claves administrativas. Playwright usa Chrome instalado; la configuración optativa permite otros motores.
 
-El modo `PLAYWRIGHT_ACCESS_SMOKE=1` selecciona únicamente el recorrido de entrada automática y crear/recargar/eliminar una tarea en Chrome, Edge, Firefox y WebKit móvil; requiere esos motores instalados. El workflow [Public browser access](.github/workflows/public-access.yml) comprueba solo WebKit contra producción desde Ubuntu en GitHub. Usa un ejecutor estándar gratuito únicamente si el repositorio es público, sin secretos, despliegues ni subida de artefactos; puede repetirse manualmente desde Actions.
+Los resultados ejecutados, las regresiones y sus límites están en [aceptación](docs/aceptacion.md) y [auditoría](docs/auditoria.md). Incluyen comprobaciones sobre Supabase real y acceso HTTPS sin sesión de Vercel. El workflow [Public browser access](.github/workflows/public-access.yml) permite repetir el smoke público de WebKit; los detalles de compatibilidad y entorno están en la auditoría.
 
-## Equipo de agentes
+La regresión de volumen crea y elimina 1.005 tareas de un espacio de prueba propio. Es optativa: sin la bandera siguiente, ese caso se omite. Para incluirla en la suite completa, con la aplicación local iniciada y el mismo Supabase configurado en `.env.local`:
 
-El Orquestador conserva infraestructura, secretos, despliegue y entrega. Develop implementa la aplicación. Testing revisa de forma independiente y devuelve hallazgos reproducibles. Sus instrucciones están en [AGENTS.md](AGENTS.md), [agents/develop.md](agents/develop.md) y [agents/testing/DIRECTRICES.md](agents/testing/DIRECTRICES.md). El trabajo real se registra en [docs/registro-agentes.md](docs/registro-agentes.md).
+```powershell
+$env:TEST_BASE_URL='http://localhost:3000'
+$env:TEST_LARGE_COLLECTION='1'
+node --env-file=.env.local node_modules/playwright/cli.js test
+```
 
-Las cuatro preguntas y el enlace personal del reclutador se recibieron y revisaron de forma privada. Quedan pendientes las respuestas sobre experiencia personal y el envío de la entrega; el enlace personal no se publica en este repositorio ni se envía el formulario por iniciativa de los agentes.
+## Despliegue gratuito
+
+1. Usa **Supabase Free** y un espacio **Vercel Hobby**; importa el repositorio con preset Next.js, raíz del proyecto y Node.js 24.
+2. Configura `SUPABASE_URL` y `SUPABASE_PUBLISHABLE_KEY` para **Production**, y despliega la rama `main`. Si cambias variables, crea un nuevo despliegue para aplicarlas.
+3. En **Settings › Deployment Protection**, desactiva **Vercel Authentication** y guarda.
+4. Comprueba la URL principal de producción en una ventana privada: debe abrir sin login de Vercel y conservar una tarea al recargar.
+
+## Límites de la demostración
+
+- Requiere conexión, JavaScript y cookies de este sitio. La interfaz explica cómo habilitarlos; no necesita cookies de terceros.
+- Cada perfil de navegador conserva su espacio. Borrar sus cookies hace perder el acceso; no hay recuperación de cuenta ni sincronización entre dispositivos.
+- Los planes gratuitos tienen cuotas y límites de altas; Supabase puede pausarse por inactividad. La aplicación no configura restricciones por país, pero no se garantiza acceso desde todas las redes o navegadores antiguos.
+- Está pensado para tableros personales. Los límites de volumen y edición entre pestañas se detallan en [la auditoría técnica](docs/auditoria.md).

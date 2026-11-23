@@ -48,6 +48,15 @@ test('API sin sesión: deniega acceso, comprueba Origin y rechaza JSON inválido
   await expectStatus(malformed, 400);
   const oversized = await fetch(`${base}/api/tasks`, { method: 'POST', headers: { Origin: base, 'Content-Type': 'application/json' }, body: JSON.stringify({ title: 'x'.repeat(9000) }), redirect: 'manual' });
   await expectStatus(oversized, 413);
+  for (const body of ['null', '[]', '{"email":"no-se-necesita@example.invalid"}']) {
+    const response = await fetch(`${base}/api/session`, { method: 'POST', headers: { Origin: base, 'Content-Type': 'application/json' }, body, redirect: 'manual' });
+    await expectStatus(response, 400);
+    assert.equal(response.headers.getSetCookie().length, 0, 'Un cuerpo de sesión inválido no debe emitir identidad');
+  }
+  const wrongType = await fetch(`${base}/api/tasks`, { method: 'POST', headers: { Origin: base, 'Content-Type': 'text/plain' }, body: '{"title":"Texto"}', redirect: 'manual' });
+  await expectStatus(wrongType, 400);
+  const invalidUtf8 = await fetch(`${base}/api/tasks`, { method: 'POST', headers: { Origin: base, 'Content-Type': 'application/json' }, body: new Uint8Array([0x7b, 0x22, 0xff, 0x22, 0x7d]), redirect: 'manual' });
+  await expectStatus(invalidUtf8, 400);
 });
 
 test('API real: sesión, CRUD persistente, validación y dos visitantes aislados', { skip: !base && 'PENDIENTE: definir TEST_BASE_URL para ejecutar contra la aplicación real', timeout: 180000 }, async (t) => {
@@ -57,6 +66,8 @@ test('API real: sesión, CRUD persistente, validación y dos visitantes aislados
   const created = [];
   const title = `QA ${randomUUID()}`;
   let id;
+  let createdAt;
+  let originalUpdatedAt;
   try {
     await t.test('sesión anónima no expone tokens y sus cookies son privadas', async () => {
       for (const visitor of [a, b]) {
@@ -80,6 +91,8 @@ test('API real: sesión, CRUD persistente, validación y dos visitantes aislados
       const { task } = await expectStatus(await a.request('POST', '/api/tasks', { title, description: 'Revisión independiente', status: 'pending', priority: 'high' }), 201);
       assert.ok(task?.id, 'La API devuelve el identificador de la tarea creada');
       id = task.id;
+      createdAt = task.created_at;
+      originalUpdatedAt = task.updated_at;
       created.push([a, id]);
       const { tasks } = await expectStatus(await a.request('GET', '/api/tasks'), 200);
       assert.ok(tasks.some((item) => item.id === id && item.title === title));
@@ -128,6 +141,9 @@ test('API real: sesión, CRUD persistente, validación y dos visitantes aislados
       assert.equal(read.task.title, `${title} editada`);
       assert.equal(read.task.status, 'done');
       assert.equal(read.task.priority, 'low');
+      assert.equal(read.task.created_at, createdAt, 'Editar conserva la fecha original');
+      assert.ok(Date.parse(read.task.updated_at) > Date.parse(originalUpdatedAt), 'El trigger SQL actualiza updated_at al escribir, sin sleeps');
+      assert.equal('owner_id' in read.task, false, 'El contrato público no expone propietario');
       await expectStatus(await a.request('DELETE', `/api/tasks/${id}`), 200);
       await expectStatus(await a.request('GET', `/api/tasks/${id}`), 404);
       const { tasks } = await expectStatus(await a.request('GET', '/api/tasks'), 200);

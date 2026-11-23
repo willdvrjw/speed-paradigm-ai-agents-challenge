@@ -20,9 +20,9 @@ export function Board() {
   const [status, setStatus] = useState<TaskStatus | "all">("all");
   const [priority, setPriority] = useState<TaskPriority | "all">("all");
   const [dialog, setDialog] = useState<DialogState>(null);
-  const [busyId, setBusyId] = useState<string | null>(null);
+  const [busyIds, setBusyIds] = useState<Set<string>>(() => new Set());
   const initialLoad = useRef<Promise<Task[]> | null>(null);
-  const moving = useRef(false);
+  const moving = useRef(new Set<string>());
 
   useEffect(() => {
     let active = true;
@@ -33,6 +33,7 @@ export function Board() {
   }, []);
 
   async function retry() {
+    if (moving.current.size > 0) return;
     setPhase("loading"); setError("");
     try { const data = await loadTasks(); setTasks(data); setPhase("ready"); }
     catch (cause) { setError(cause instanceof Error ? cause.message : "No pudimos abrir tu espacio."); setPhase("error"); }
@@ -46,11 +47,15 @@ export function Board() {
     setDialog(null); setError(""); setAnnouncement(id ? "Cambios guardados." : "Tarea creada.");
   }
   async function changeStatus(task: Task, nextStatus: TaskStatus) {
-    if (moving.current || task.status === nextStatus) return;
-    moving.current = true; setBusyId(task.id); setError(""); setAnnouncement("");
+    if (moving.current.has(task.id) || task.status === nextStatus) return;
+    moving.current.add(task.id);
+    setBusyIds((current) => new Set(current).add(task.id)); setError(""); setAnnouncement("");
     try { const updated = await moveTask(task.id, nextStatus); setTasks((current) => current.map((item) => item.id === updated.id ? updated : item)); setAnnouncement(`Tarea movida a ${STATUS_LABELS[nextStatus].toLowerCase()}.`); }
     catch (cause) { setError(cause instanceof Error ? cause.message : "No pudimos cambiar el estado."); }
-    finally { moving.current = false; setBusyId(null); }
+    finally {
+      moving.current.delete(task.id);
+      setBusyIds((current) => { const next = new Set(current); next.delete(task.id); return next; });
+    }
   }
   async function deleteTask(task: Task) {
     setAnnouncement("");
@@ -79,12 +84,12 @@ export function Board() {
           <div className="filters"><div className="search-field"><label className="sr-only" htmlFor="task-search">Buscar tareas</label><Icon name="search" size={19} /><input id="task-search" type="search" placeholder="Buscar por título o descripción…" value={query} onChange={(event) => setQuery(event.target.value)} disabled={!ready} /></div><div className="filter-field"><label htmlFor="status-filter">Estado</label><select id="status-filter" value={status} onChange={(event) => setStatus(event.target.value as TaskStatus | "all")} disabled={!ready}><option value="all">Todos los estados</option>{STATUS_VALUES.map((value) => <option value={value} key={value}>{STATUS_LABELS[value]}</option>)}</select></div><div className="filter-field"><label htmlFor="priority-filter">Prioridad</label><select id="priority-filter" value={priority} onChange={(event) => setPriority(event.target.value as TaskPriority | "all")} disabled={!ready}><option value="all">Todas las prioridades</option>{PRIORITY_VALUES.map((value) => <option value={value} key={value}>{PRIORITY_LABELS[value]}</option>)}</select></div>{filtering ? <button className="clear-filters" type="button" onClick={clearFilters}>Limpiar filtros</button> : null}</div>
 
           <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
-          {error ? <div className="error-panel" role="alert"><Icon name="info" /><div><strong>No pudimos completar la acción</strong><p>{error}</p></div><button type="button" className="button button-secondary" onClick={retry}><Icon name="refresh" size={16} />Reintentar</button></div> : null}
+          {error ? <div className="error-panel" role="alert"><Icon name="info" /><div><strong>No pudimos completar la acción</strong><p>{error}</p></div><button type="button" className="button button-secondary" disabled={busyIds.size > 0} onClick={retry}><Icon name="refresh" size={16} />Reintentar</button></div> : null}
 
           {phase === "loading" && loadingStarted ? <div className="loading-board" role="status"><span className="loading-spinner" />Abriendo tu espacio…<p>Un momento para poner todo en su lugar.</p></div> : null}
           {ready && tasks.length === 0 ? <div className="empty-state"><span className="empty-mark" aria-hidden="true"><Icon name="check" size={28} /></span><p className="eyebrow">UN NUEVO COMIENZO</p><h3>Tu próximo paso empieza aquí.</h3><p>No tienes tareas todavía. Dale un lugar a eso<br className="desktop-break" /> que tienes en mente y empieza a avanzar.</p><button className="button button-primary" type="button" onClick={() => create()}><Icon name="plus" size={18} />Crear mi primera tarea</button></div> : null}
           {ready && tasks.length > 0 && visible.length === 0 ? <div className="empty-state empty-results"><Icon name="search" size={32} /><h3>No encontramos esas tareas.</h3><p>Prueba otra búsqueda o ajusta los filtros.</p><button className="button button-secondary" type="button" onClick={clearFilters}>Limpiar filtros</button></div> : null}
-          {ready && visible.length > 0 ? <><p className="results-count" role="status">{filtering ? `${visible.length} de ${tasks.length} tareas coinciden con tus filtros` : ""}</p><div className="columns">{STATUS_VALUES.filter((value) => status === "all" || status === value).map((value) => { const items = visible.filter((task) => task.status === value); return <section className={`column column-${value}`} key={value} aria-labelledby={`column-${value}`}><div className="column-heading"><h3 id={`column-${value}`}><span className="status-dot" />{STATUS_LABELS[value]}<span className="column-count">{items.length}</span></h3><button type="button" className="icon-button" aria-label={`Crear tarea en ${STATUS_LABELS[value]}`} onClick={() => create(value)}><Icon name="plus" size={19} /></button></div><div className="column-tasks">{items.map((task) => <TaskCard key={task.id} task={task} busy={busyId === task.id} onEdit={(task) => setDialog({ kind: "edit", task })} onDelete={(task) => setDialog({ kind: "delete", task })} onMove={changeStatus} />)}{items.length === 0 ? <div className="column-empty"><span aria-hidden="true">{value === "done" ? "✓" : "○"}</span><p>{columnCopy[value]}</p></div> : null}</div></section>; })}</div></> : null}
+          {ready && visible.length > 0 ? <><p className="results-count" role="status">{filtering ? `${visible.length} de ${tasks.length} tareas coinciden con tus filtros` : ""}</p><div className="columns">{STATUS_VALUES.filter((value) => status === "all" || status === value).map((value) => { const items = visible.filter((task) => task.status === value); return <section className={`column column-${value}`} key={value} aria-labelledby={`column-${value}`}><div className="column-heading"><h3 id={`column-${value}`}><span className="status-dot" />{STATUS_LABELS[value]}<span className="column-count">{items.length}</span></h3><button type="button" className="icon-button" aria-label={`Crear tarea en ${STATUS_LABELS[value]}`} onClick={() => create(value)}><Icon name="plus" size={19} /></button></div><div className="column-tasks">{items.map((task) => <TaskCard key={task.id} task={task} busy={busyIds.has(task.id)} onEdit={(task) => setDialog({ kind: "edit", task })} onDelete={(task) => setDialog({ kind: "delete", task })} onMove={changeStatus} />)}{items.length === 0 ? <div className="column-empty"><span aria-hidden="true">{value === "done" ? "✓" : "○"}</span><p>{columnCopy[value]}</p></div> : null}</div></section>; })}</div></> : null}
         </section>
         <aside className="privacy-note"><Icon name="lock" size={15} /><p>Sin registro. Solo tus tareas, en tu espacio.<span> Conserva las cookies para volver a él; al borrarlas perderás el acceso.</span></p></aside>
       </main>
