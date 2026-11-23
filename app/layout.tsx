@@ -9,5 +9,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#10141c" };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
-  return <html lang="es"><body>{children}</body></html>;
+  return <html lang="es"><body><noscript><section className="noscript-notice" aria-labelledby="noscript-title"><h2 id="noscript-title">Activa JavaScript para usar Foco</h2><p>Tu navegador necesita JavaScript para abrir el tablero y guardar las tareas. Actívalo para este sitio y vuelve a cargar la página.</p><a className="button button-primary" href="/">Volver a cargar Foco</a></section></noscript>{children}</body></html>;
 }

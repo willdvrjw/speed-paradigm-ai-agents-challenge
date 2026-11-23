@@ -2,6 +2,9 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.noscript-notice{width:calc(100% - 32px);max-width:900px;margin:24px auto;padding:22px;border:1px solid #597963;border-radius:12px;background:#203027;color:var(--text)}
+.noscript-notice h2{font-size:20px;line-height:1.4;margin-bottom:10px}
+.noscript-notice p{font-size:14px;line-height:1.7;margin-bottom:16px}
 button,input,textarea,select{font:inherit}
 button,a,input,textarea,select{-webkit-tap-highlight-color:transparent}
 button{cursor:pointer}

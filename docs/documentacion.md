@@ -134,3 +134,17 @@ Consultadas el 2026-11-23 antes de crear las pruebas independientes:
 - Develop consultó https://vercel.com/docs/deployments/environments y las fuentes de Authentication/Hobby antes de añadir al README los pasos reproducibles de despliegue gratuito, variables en Production, Vercel Authentication desactivado y comprobación privada de la URL principal. No cambió código de aplicación ni fue necesaria otra compilación por esta documentación.
 
 - Testing volvió a consultar la documentación instalada de Next.js para Playwright/Route Handlers, https://playwright.dev/docs/browser-contexts y https://nodejs.org/docs/latest-v24.x/api/test.html antes de la nueva auditoría. La prueba de navegador se reforzó con una aserción explícita de cero cookies iniciales. Los contextos aislados de Chrome y las peticiones públicas no usan sesión de Vercel ni bypass.
+
+## Acceso público y compatibilidad ampliada
+
+- Orquestador consultó la guía de verificación de Vercel, la ayuda instalada de CLI `project inspect`, `firewall status` y `deploy --help`, https://vercel.com/docs/cli/deploy y https://vercel.com/docs/deployments/promoting-a-deployment antes de preparar la nueva publicación. El objetivo es abrir el enlace sin cuenta y usar un espacio persistente propio.
+- La inspección del proyecto correcto confirmó `ssoProtection=null`, `passwordProtection=null`, `trustedIps=null` y ningún bypass. El firewall no tiene reglas propias ni bloqueos de IP; Attack Challenge y Bot Protection están desactivados. Las protecciones administradas por Vercel siguen activas. No se modificó la configuración de seguridad durante esta comprobación.
+- https://nextjs.org/docs/architecture/supported-browsers y la documentación incluida en Next.js 16.4.6 definen el soporte de navegadores modernos. Cambiar idioma o zona horaria de una prueba no demuestra acceso desde otra ubicación física.
+- Se consultaron https://supabase.com/docs/guides/auth/auth-anonymous y https://supabase.com/docs/guides/auth/rate-limits: las altas anónimas tienen límites por IP; con llamadas desde servidor los visitantes pueden compartir el límite de salida. No se eliminan controles ni se promete disponibilidad universal o capacidad ilimitada en el plan gratuito.
+- El enlace personal y las preguntas del reclutador ya se leyeron privadamente. Solo se hizo la operación de lectura del formulario; no se enviaron respuestas ni se publica el enlace personal.
+
+## Ayudas de acceso de Develop
+
+Fuentes consultadas antes del cambio: https://developer.mozilla.org/en-US/docs/Web/API/Navigator/cookieEnabled, https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/noscript y https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies. Decisión: ofrecer aviso legible sin JavaScript, detectar cookies deshabilitadas antes del alta anónima y explicar cómo permitir las cookies del sitio si la sesión recién creada no se conserva. Un error de una sesión previa sigue siendo distinto; no se reemplaza desde el cliente.
+
+Se consultó `node_modules/next/dist/docs/03-architecture/supported-browsers.md`: Chrome/Edge/Firefox 111+ y Safari 16.4+. La compatibilidad MDN de https://raw.githubusercontent.com/mdn/browser-compat-data/main/api/AbortSignal.json confirma `AbortSignal.timeout` desde Safari 16, Firefox 100 y Chrome 103 (la implementación parcial antigua difiere solo en el nombre del error, que el cliente no distingue). No se confirmó un defecto de esa API dentro del soporte de Next.js y no se cambia por conjetura.

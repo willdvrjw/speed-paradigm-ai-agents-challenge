@@ -13,6 +13,7 @@ const columnCopy: Record<TaskStatus, string> = { pending: "Todo empieza con un p
 export function Board() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [phase, setPhase] = useState<"loading" | "ready" | "error">("loading");
+  const [loadingStarted, setLoadingStarted] = useState(false);
   const [error, setError] = useState("");
   const [announcement, setAnnouncement] = useState("");
   const [query, setQuery] = useState("");
@@ -25,6 +26,7 @@ export function Board() {
 
   useEffect(() => {
     let active = true;
+    setLoadingStarted(true);
     initialLoad.current ??= loadTasks();
     initialLoad.current.then((data) => { if (active) { setTasks(data); setPhase("ready"); } }).catch((cause: unknown) => { if (active) { setError(cause instanceof Error ? cause.message : "No pudimos abrir tu espacio."); setPhase("error"); } });
     return () => { active = false; };
@@ -72,14 +74,14 @@ export function Board() {
 
         <div className="stats" aria-label="Resumen de tus tareas">{STATUS_VALUES.map((value, index) => <div className={`stat stat-${value}`} key={value}><span className="stat-icon" aria-hidden="true">{value === "done" ? <Icon name="check" /> : value === "in_progress" ? <Icon name="clock" /> : <span className="pending-ring" />}</span><div><p>{["Por hacer", "En marcha", "Terminadas"][index]}</p><strong>{ready ? String(counts[value]).padStart(2, "0") : "—"}</strong></div><span className="stat-label">{["DA EL PRIMER PASO", "SIGUE ASÍ", "BIEN HECHO"][index]}</span></div>)}</div>
 
-        <section id="tablero" className="board-section" aria-labelledby="board-title" aria-busy={phase === "loading"}>
-          <div className="section-heading"><h2 id="board-title">Tu tablero <span>{ready ? `${tasks.length} ${tasks.length === 1 ? "tarea" : "tareas"}` : ""}</span></h2><span className="saved-note"><span className="live-dot" />{ready ? "Tus cambios se guardan al instante" : "Preparando tu espacio"}</span></div>
+        <section id="tablero" className="board-section" aria-labelledby="board-title" aria-busy={phase === "loading" && loadingStarted}>
+          <div className="section-heading"><h2 id="board-title">Tu tablero <span>{ready ? `${tasks.length} ${tasks.length === 1 ? "tarea" : "tareas"}` : ""}</span></h2>{loadingStarted ? <span className="saved-note"><span className="live-dot" />{ready ? "Tus cambios se guardan al instante" : "Preparando tu espacio"}</span> : null}</div>
           <div className="filters"><div className="search-field"><label className="sr-only" htmlFor="task-search">Buscar tareas</label><Icon name="search" size={19} /><input id="task-search" type="search" placeholder="Buscar por título o descripción…" value={query} onChange={(event) => setQuery(event.target.value)} disabled={!ready} /></div><div className="filter-field"><label htmlFor="status-filter">Estado</label><select id="status-filter" value={status} onChange={(event) => setStatus(event.target.value as TaskStatus | "all")} disabled={!ready}><option value="all">Todos los estados</option>{STATUS_VALUES.map((value) => <option value={value} key={value}>{STATUS_LABELS[value]}</option>)}</select></div><div className="filter-field"><label htmlFor="priority-filter">Prioridad</label><select id="priority-filter" value={priority} onChange={(event) => setPriority(event.target.value as TaskPriority | "all")} disabled={!ready}><option value="all">Todas las prioridades</option>{PRIORITY_VALUES.map((value) => <option value={value} key={value}>{PRIORITY_LABELS[value]}</option>)}</select></div>{filtering ? <button className="clear-filters" type="button" onClick={clearFilters}>Limpiar filtros</button> : null}</div>
 
           <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</p>
           {error ? <div className="error-panel" role="alert"><Icon name="info" /><div><strong>No pudimos completar la acción</strong><p>{error}</p></div><button type="button" className="button button-secondary" onClick={retry}><Icon name="refresh" size={16} />Reintentar</button></div> : null}
 
-          {phase === "loading" ? <div className="loading-board" role="status"><span className="loading-spinner" />Abriendo tu espacio…<p>Un momento para poner todo en su lugar.</p></div> : null}
+          {phase === "loading" && loadingStarted ? <div className="loading-board" role="status"><span className="loading-spinner" />Abriendo tu espacio…<p>Un momento para poner todo en su lugar.</p></div> : null}
           {ready && tasks.length === 0 ? <div className="empty-state"><span className="empty-mark" aria-hidden="true"><Icon name="check" size={28} /></span><p className="eyebrow">UN NUEVO COMIENZO</p><h3>Tu próximo paso empieza aquí.</h3><p>No tienes tareas todavía. Dale un lugar a eso<br className="desktop-break" /> que tienes en mente y empieza a avanzar.</p><button className="button button-primary" type="button" onClick={() => create()}><Icon name="plus" size={18} />Crear mi primera tarea</button></div> : null}
           {ready && tasks.length > 0 && visible.length === 0 ? <div className="empty-state empty-results"><Icon name="search" size={32} /><h3>No encontramos esas tareas.</h3><p>Prueba otra búsqueda o ajusta los filtros.</p><button className="button button-secondary" type="button" onClick={clearFilters}>Limpiar filtros</button></div> : null}
           {ready && visible.length > 0 ? <><p className="results-count" role="status">{filtering ? `${visible.length} de ${tasks.length} tareas coinciden con tus filtros` : ""}</p><div className="columns">{STATUS_VALUES.filter((value) => status === "all" || status === value).map((value) => { const items = visible.filter((task) => task.status === value); return <section className={`column column-${value}`} key={value} aria-labelledby={`column-${value}`}><div className="column-heading"><h3 id={`column-${value}`}><span className="status-dot" />{STATUS_LABELS[value]}<span className="column-count">{items.length}</span></h3><button type="button" className="icon-button" aria-label={`Crear tarea en ${STATUS_LABELS[value]}`} onClick={() => create(value)}><Icon name="plus" size={19} /></button></div><div className="column-tasks">{items.map((task) => <TaskCard key={task.id} task={task} busy={busyId === task.id} onEdit={(task) => setDialog({ kind: "edit", task })} onDelete={(task) => setDialog({ kind: "delete", task })} onMove={changeStatus} />)}{items.length === 0 ? <div className="column-empty"><span aria-hidden="true">{value === "done" ? "✓" : "○"}</span><p>{columnCopy[value]}</p></div> : null}</div></section>; })}</div></> : null}

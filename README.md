@@ -8,6 +8,10 @@ Repositorio: [speed-paradigm-ai-agents-challenge](https://github.com/willdvrjw/s
 
 La aplicación está desplegada en producción con Supabase real. No se necesitan credenciales de demostración: crea una sesión anónima automáticamente. Las comprobaciones ejecutadas y sus límites se documentan en [docs/aceptacion.md](docs/aceptacion.md).
 
+Puedes compartir directamente el enlace de producción: no exige cuenta de Vercel, correo, contraseña, instalación ni permiso de ubicación. Cada navegador abre automáticamente un espacio propio, también en navegación privada. La interfaz solo hace peticiones al dominio de la aplicación; no necesita cookies de terceros.
+
+Usa un navegador moderno con JavaScript y cookies de este sitio permitidos. La base de compatibilidad de Next.js es Chrome/Edge/Firefox 111+ y Safari 16.4+. La aplicación no configura restricciones por país o IP. Esto no garantiza acceso desde todas las redes, herramientas sin navegador o navegadores antiguos; siguen aplicando la conectividad y la disponibilidad y los límites de los proveedores gratuitos.
+
 ## Arranque local
 
 Requisitos: Node.js 24, npm y un proyecto Supabase Free. Las versiones exactas de dependencias están fijadas en `package.json` y `package-lock.json`.
@@ -77,4 +81,4 @@ Para integración/navegador, iniciar antes una compilación de producción y def
 
 El Orquestador conserva infraestructura, secretos, despliegue y entrega. Develop implementa la aplicación. Testing revisa de forma independiente y devuelve hallazgos reproducibles. Sus instrucciones están en [AGENTS.md](AGENTS.md), [agents/develop.md](agents/develop.md) y [agents/testing/DIRECTRICES.md](agents/testing/DIRECTRICES.md). El trabajo real se registra en [docs/registro-agentes.md](docs/registro-agentes.md).
 
-Las cuatro preguntas y el enlace personal del reclutador siguen pendientes de su texto exacto; no se inventan respuestas ni se envían mensajes por iniciativa de los agentes.
+Las cuatro preguntas y el enlace personal del reclutador se recibieron y revisaron de forma privada. Quedan pendientes las respuestas sobre experiencia personal y el envío de la entrega; el enlace personal no se publica en este repositorio ni se envía el formulario por iniciativa de los agentes.

@@ -1,5 +1,15 @@
 import type { Task, TaskInput } from "./tasks";
 
+class RequestError extends Error {
+  status: number;
+
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = "RequestError";
+    this.status = status;
+  }
+}
+
 async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
   let response: Response;
   try {
@@ -20,15 +30,25 @@ async function request<T>(url: string, options: RequestInit = {}): Promise<T> {
     throw new Error("El servicio no está disponible. Vuelve a intentarlo en un momento.");
   }
   if (!response.ok) {
-    throw new Error(body.error || "No pudimos completar la acción. Vuelve a intentarlo.");
+    throw new RequestError(response.status, body.error || "No pudimos completar la acción. Vuelve a intentarlo.");
   }
   return body;
 }
 
 export async function loadTasks(): Promise<Task[]> {
+  if (typeof navigator !== "undefined" && navigator.cookieEnabled === false) {
+    throw new Error("Para abrir tu espacio, permite las cookies de este sitio en tu navegador y pulsa Reintentar.");
+  }
   await request<{ ok: boolean }>("/api/session", { method: "POST", body: "{}" });
-  const data = await request<{ tasks: Task[] }>("/api/tasks");
-  return data.tasks;
+  try {
+    const data = await request<{ tasks: Task[] }>("/api/tasks");
+    return data.tasks;
+  } catch (cause) {
+    if (cause instanceof RequestError && cause.status === 401) {
+      throw new Error("No pudimos conservar tu sesión. Permite las cookies de este sitio y pulsa Reintentar. Si ya las permites, vuelve a cargar la página.");
+    }
+    throw cause;
+  }
 }
 
 export async function saveTask(input: TaskInput, id?: string): Promise<Task> {
