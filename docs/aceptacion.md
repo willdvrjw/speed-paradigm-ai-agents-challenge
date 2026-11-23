@@ -4,30 +4,38 @@ Responsable: Testing. Fecha de inicio: 2026-11-23 (America/Bogota).
 
 `PASS` significa comprobado con evidencia; `FAIL` identifica un defecto reproducido; `PENDIENTE` indica que falta implementación, acceso o verificación. Un plan, un archivo de configuración o un mock no prueba que un servicio esté operativo.
 
-## Estado inicial
+## Estado actual
 
-Se leyeron `AGENTS.md`, `agents/develop.md` y `agents/testing/DIRECTRICES.md`. Al comenzar esta revisión solo existían instrucciones y documentación, sin aplicación, dependencias, repositorio Git ni despliegue. Esta matriz se actualizará sobre el resultado real de Develop.
+**APROBADO TÉCNICAMENTE.** La aplicación está disponible en producción pública: https://speed-paradigm-ai-agents-challenge.vercel.app . Testing comprobó HTTP 200 sin autenticación ni redirección, 8/8 pruebas de API sobre HTTPS y 3/3 pruebas de Chrome en contextos limpios, sin bypass ni sesión Vercel. Auth anónima, datos reales, persistencia e aislamiento funcionan. Los dictámenes pendientes y errores 422 anteriores se conservan abajo como historial; el bloqueo de Auth ya está resuelto. A17/A18 son pendientes del proceso del reclutador y no bloquean esta entrega técnica.
+
+## Matriz final de aceptación
+
+Esta matriz refleja el resultado actual de la revisión y las ejecuciones reales. La evidencia cronológica de cada fase y sus límites se conserva después de la matriz.
 
 | ID | Requisito | Estado | Evidencia o comprobación pendiente |
 | --- | --- | --- | --- |
 | A01 | Aplicación Next.js real con TypeScript | PASS | Next.js 16.4.6 y TypeScript 7.0.2 instalados. Develop ejecutó build de producción correcto; Testing ejecutó `npm run typecheck` y arrancó esa compilación con `npm start` (Ready). |
 | A02 | Tres agentes con Markdown y delegación real | PASS | Markdown y dos TOML versionados; delegación real a Develop y Testing y revisión independiente del código completada. El historial inspeccionado contiene 2 commits y el repositorio es público. |
-| A03 | Testing devuelve fallos y Develop los corrige | PENDIENTE | Revisión independiente real realizada sin detectar defectos de aplicación en las comprobaciones ejecutadas. No se inventa un fallo para forzar una corrección. Falta terminar integración y revisión funcional. |
-| A04 | Base de datos gratuita Supabase o Firebase operativa | PENDIENTE | Recurso Supabase Free real y migración aplicada con TLS verificado, RLS/políticas/restricciones presentes. Auth `anonymous_users=false` impide comprobar la sesión y persistencia del visitante. |
-| A05 | CRUD completo de tareas | PENDIENTE | Crear, consultar, editar, cambiar estado y borrar con confirmación, comprobando resultado persistido. |
-| A06 | Búsqueda, filtros y estados vacíos/carga/error | PENDIENTE | Estado de error/reintento y render de carga revisados en navegador real. Búsqueda, filtros y vacío de datos reales esperan Auth anónima para el flujo completo. |
-| A07 | Validación y restricciones | PENDIENTE | Casos vacíos, espacios, longitudes límite, tipos/estados/prioridades inválidos; probar API y base de datos. |
-| A08 | Aislamiento de espacios | PENDIENTE | API sin sesión denegada; SELECT directo al rol anon denegado 42501. Faltan dos identidades anónimas reales y ataques de lectura/mutación/propietario entre ellas. |
-| A09 | Accesibilidad y adaptación | PENDIENTE | Chrome real: estructura/idioma/error/teclado/foco y no overflow a 320/390/768/1440 px PASS. Faltan diálogos y flujo completo con datos reales. |
-| A10 | Calidad reproducible | PENDIENTE | Tipos, 9 pruebas de reglas/Origin, auditoría npm y 1 prueba de documento/error/navegador pasaron. Faltan integración real y flujo completo de navegador con Auth anónima habilitada. |
+| A03 | Testing devuelve fallos y Develop los corrige | PASS | Revisión independiente y pruebas reales completadas; no se encontraron defectos de aplicación que exigieran corrección. Se documentaron y corrigieron expectativas del arnés sin atribuirlas a Develop ni inventar un ciclo de fallos. |
+| A04 | Base de datos gratuita Supabase o Firebase operativa | PASS | Supabase Free real, migración aplicada con TLS verificado; Auth anónima, CRUD persistente y ataques RLS/restricciones SQL ejecutados correctamente. |
+| A05 | CRUD completo de tareas | PASS | Crear, consultar/recargar, editar, cambiar estado y eliminar persistió correctamente en API y Chrome; cancelar/confirmar borrado verificado. |
+| A06 | Búsqueda, filtros y estados vacíos/carga/error | PASS | Chrome real verificó búsqueda combinada con filtros, ausencia de resultados, limpiar filtros, vacío inicial/final y error controlado con reintento que recupera el servicio real. |
+| A07 | Validación y restricciones | PASS | Reglas, entradas inválidas por HTTP y restricciones SQL directas pasaron; longitud Unicode, blanco/control, estados/prioridades y propietario no permitido incluidos. |
+| A08 | Aislamiento de espacios | PASS | Dos sesiones API y dos identidades Supabase reales; lectura/mutación ajena e INSERT/transferencia de propietario denegados, con integridad posterior de A comprobada. |
+| A09 | Accesibilidad y adaptación | PASS | Chrome real: escritorio/móvil, teclado, foco contenido, Tab a campos, Escape/retorno y acción inicial segura en borrado; etiquetas, anuncios, error y ausencia de overflow verificados. |
+| A10 | Calidad reproducible | PASS | Tipos/build documentados, 9 pruebas de reglas/Origin, auditoría npm, 16/16 de integración local, 8/8 de API HTTPS pública y 3/3 de navegador público, sin omisiones. Detalle de ejecuciones y ajustes de prueba abajo. |
 | A11 | Ausencia de claves API y secretos en repositorio | PASS | 2 commits, 49 snapshots únicos, 7 valores sensibles y prefijos de credenciales examinados sin coincidencias ni archivos prohibidos; 14 archivos cliente y 40 archivos del dry-upload sin fugas. Alcance y límites detallados abajo. |
 | A12 | Repositorio GitHub público o accesible | PASS | https://github.com/willdvrjw/speed-paradigm-ai-agents-challenge . GitHub API sin autenticación HTTP 200 informa `visibility:public`, rama main; README raw HTTP 200 con título Foco. |
-| A13 | Despliegue gratis en producción | PENDIENTE | Build producción READY `dpl_B3nUE5cHdYBNeBH2nasPtvXmYFm4`, commit `f3d8d5f`, en Hobby; preparado sin asignar dominio. No promovido porque falta validar Auth y CRUD real. |
-| A14 | URL pública sin autenticación Vercel | PENDIENTE | El URL de preparación devuelve 302 a Vercel SSO sin credenciales. No cumple entrega pública. Bypass de pruebas revocado; no se presenta enlace con bypass como producción. |
-| A15 | README con arranque y demostración | PASS | README real con requisitos, instalación, SQL, variables por nombre, comandos, arquitectura y recorrido de demostración; enlaza las evidencias sin inventar URL de producción. |
-| A16 | Credenciales de prueba si hay login | PASS | No existe formulario de login y el navegador no presenta un acceso Vercel en local. No se requieren credenciales de demostración; falta validar la creación automática de sesión real al habilitar Auth anónima. |
+| A13 | Despliegue gratis en producción | PASS | `dpl_B3nUE5cHdYBNeBH2nasPtvXmYFm4`, fuente de aplicación `f3d8d5f`, promovido en Hobby; Supabase Free. URL pública con API HTTPS y flujo completo verificados. |
+| A14 | URL pública sin autenticación Vercel | PASS | https://speed-paradigm-ai-agents-challenge.vercel.app devuelve HTTP 200 sin cookies/Authorization, sin redirección. Chrome limpio completa el flujo sin bypass ni login Vercel. |
+| A15 | README con arranque y demostración | PASS | README real con URL pública/repositorio, requisitos, instalación, SQL, variables por nombre, comandos, arquitectura y recorrido de demostración. |
+| A16 | Credenciales de prueba si hay login | PASS | No existe formulario de login y Chrome público no presenta acceso Vercel. Sesión anónima creada automáticamente y CRUD real comprobado; no se necesitan credenciales de demostración. |
 | A17 | Cuatro respuestas cortas del reclutador | PENDIENTE | El texto exacto de las cuatro preguntas no fue incluido en el encargo. No inventarlas. |
 | A18 | Entrega mediante enlace personal | PENDIENTE | El enlace personal no fue incluido; preparar los entregables sin enviar mensajes ni formularios por iniciativa propia. |
+
+## Historial de revisión
+
+Las secciones siguientes conservan el avance cronológico, incluidos límites y rechazos de Auth que ya fueron resueltos. Al inicio Testing leyó `AGENTS.md`, `agents/develop.md` y `agents/testing/DIRECTRICES.md`, y solo existían instrucciones/documentación, sin aplicación, dependencias ni despliegue. Para conocer el resultado vigente deben usarse el estado y la matriz final anteriores y la validación pública al final del documento.
 
 ## Contrato de seguridad recomendado a Develop
 
@@ -193,3 +201,94 @@ Orquestador creó un despliegue de producción de preparación en el espacio `wi
 Las comprobaciones autenticadas de Orquestador sobre esa preparación devolvieron home 200 con Foco, GET de tareas sin sesión 401 con `no-store`, POST de sesión sin Origin 403 y POST con Origin correcto 503 debido al requisito de Auth. No prueban CRUD operativo ni reemplazan la visita pública privada exigida. Orquestador revocó mediante la API oficial el bypass temporal de pruebas, comprobó que no quedaban bypasses y eliminó su archivo local de estado; ningún secreto de acceso se registra aquí.
 
 El servidor de producción local se mantiene disponible en `http://localhost:3000` para retomar. Al habilitar Auth anónima, los siguientes pasos de Testing son ejecutar la integración completa, los ataques RLS entre dos identidades, y `npm run test:e2e` contra datos reales. Después corresponde probar el despliegue preparado y, si pasa, que Orquestador promueva y verifique HTTP y navegador limpios en la URL pública definitiva. CRUD, persistencia tras recarga, aislamiento autenticado y flujo completo de navegador continúan PENDIENTES hasta esas ejecuciones.
+
+## Reanudación tras confirmar Anonymous Sign-Ins
+
+El usuario confirmó que activó **Allow anonymous sign-ins** y guardó. Testing releyó `AGENTS.md` y sus directrices y revisó el estado limpio del repositorio en commit `a61c82d`. Orquestador volvió a observar `anonymous_users=false` en los ajustes y pidió comprobar la frontera de Auth real una sola vez, sin depender de esa lectura de configuración.
+
+Testing ejecutó exactamente una llamada `supabase.auth.signInAnonymously()` desde Node.js con `SUPABASE_URL` y `SUPABASE_PUBLISHABLE_KEY`, sin persistir sesiones ni imprimir claves o tokens. Resultado observado para `enwgedmpnjnlyxjzbica.supabase.co`:
+
+```text
+success: false
+error.name: AuthApiError
+error.code: anonymous_provider_disabled
+error.status: 422
+error.message: Anonymous sign-ins are disabled
+```
+
+No se obtuvo sesión ni se creó un usuario. El resultado acredita un rechazo real del proveedor y no solo una posible caché de la consulta de ajustes. Se detuvieron las comprobaciones dependientes: no se ejecutaron CRUD autenticado, ataques RLS entre identidades ni E2E completo, ni se repitieron altas. Tampoco se repitió build o auditoría sin cambios de aplicación.
+
+**Dictamen de esta reanudación: PENDIENTE funcional por configuración externa de Auth.** No se identificó un defecto nuevo de aplicación y no hay una corrección de Develop solicitada. La promoción y la aceptación pública continúan pendientes hasta que el proyecto utilizado por la aplicación permita realmente el inicio anónimo y pasen las pruebas preparadas.
+
+### Criterio de foco del diálogo antes de continuar E2E
+
+Con Auth habilitado, la primera ejecución completa de navegador encontró una expectativa demasiado específica de Testing: exigía foco inicial en Título, aunque Chrome había enfocado Cerrar dentro del diálogo con contorno visible. Antes de cambiar la prueba se consultó [WAI APG: Modal Dialog](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/), que exige foco contenido en el modal, navegación interna, cierre con Escape y retorno al invocador; no exige que el campo Título reciba siempre el foco inicial. Se ajustará la prueba a ese contrato comprobando además que Tab llega a Título y que la confirmación de borrado no enfoca inicialmente la acción destructiva. No se cambia aplicación ni se registra esta expectativa del arnés como un defecto de Develop.
+
+## Validación funcional real tras habilitar Auth
+
+Orquestador confirmó la lectura actualizada `external.anonymous_users=true` y el usuario aportó la configuración guardada del mismo proyecto. Testing retomó las pruebas preparadas sin cambiar aplicación ni repetir build o reglas unitarias que ya habían pasado.
+
+### Integración completa
+
+```text
+TEST_BASE_URL=http://localhost:3000
+npm run test:integration
+tests 16; pass 16; fail 0; cancelled 0; skipped 0; todo 0; exit 0
+```
+
+Los 16 resultados incluyen cuatro pruebas principales y doce subpruebas: frontera sin sesión/Origin/JSON; sesión anónima y cookies sin tokens JSON; creación y lectura persistida; aislamiento de dos visitantes API; entradas inválidas y owner_id no permitido; CSRF con cookie válida; edición/estado/borrado; rol anon sin lectura; dos identidades Supabase; INSERT propio; lectura ajena; UPDATE/DELETE ajenos; INSERT como otro propietario y transferencia de propiedad denegados; y restricciones SQL sobre valores inválidos. El acceso de la aplicación y los ataques directos usan únicamente la clave publicable y las sesiones de cada visitante. Las tareas creadas se eliminan con sus propias sesiones; las identidades anónimas quedan sujetas a retención del proveedor.
+
+### Navegador real
+
+Primera ejecución `npm run test:e2e`: tres escenarios, dos PASS y un fallo de expectativa del arnés sobre foco inicial, descrito en la sección anterior. El caso de error/reintento recuperó la sesión real al retirar exclusivamente la interrupción de conexión; el documento y la adaptación pasaron. No se simuló la persistencia del flujo principal.
+
+Tras ajustar el contrato de foco de Testing según WAI APG se repitió solamente el escenario afectado:
+
+```text
+TEST_BASE_URL=http://localhost:3000
+npm run test:e2e -- tests/e2e/board.spec.ts --grep visitante
+1 passed (7.5s); exit 0
+```
+
+Resultado final: los tres escenarios distintos de navegador están aprobados sobre el mismo código de aplicación. El flujo principal comprobó visitante sin login, crear/recargar, cambiar estado, buscar y combinar filtros, limpiar resultados, editar desde viewport móvil, persistir la edición al recargar, cancelar y confirmar borrado, y volver al estado vacío. También comprobó cookies HttpOnly, ausencia de tokens en localStorage, ausencia de excepciones de página, foco dentro del diálogo, acceso a Título con Tab, cierre con Escape/retorno y cancelación de borrado con teclado. Se inspeccionaron las capturas de escritorio y móvil con la tarea sintética real, sin contenido cortado ni desbordamiento horizontal.
+
+### Preparación HTTPS y dictamen de promoción
+
+Testing leyó `.artifacts/staged-verification.json`, producido por Orquestador contra `dpl_B3nUE5cHdYBNeBH2nasPtvXmYFm4`: sesión 200 con cookies HttpOnly/Secure/Lax; acceso sin sesión 401; creación 201; lectura persistida; actualización confirmada; borrado confirmado por GET 404. El registro indica limpieza de la tarea, revocación del bypass temporal y cero bypasses restantes. Esta evidencia autenticada de preparación no sustituye la visita pública limpia.
+
+**Dictamen: APTO PARA PROMOVER la compilación preparada.** No hay cambios de aplicación pendientes ni defectos reproducibles identificados. Después de la promoción falta la comprobación independiente de HTTP sin cookies/Authorization y Chrome en contexto limpio contra la URL pública definitiva, con integración y flujo de datos reales sobre HTTPS. A13/A14 permanecen PENDIENTES hasta esa validación.
+
+## Validación final de producción pública
+
+Orquestador promovió el mismo despliegue `dpl_B3nUE5cHdYBNeBH2nasPtvXmYFm4` y asignó el dominio público. Testing validó de forma independiente la URL definitiva, sin importar cookies, almacenamiento de sesión o cabeceras de Vercel, y sin usar enlace o secreto de bypass.
+
+| Entregable | URL real |
+| --- | --- |
+| Aplicación pública | https://speed-paradigm-ai-agents-challenge.vercel.app |
+| Repositorio público | https://github.com/willdvrjw/speed-paradigm-ai-agents-challenge |
+
+La petición HTTP inicial de Testing, sin cookies ni Authorization y sin seguir redirecciones, devolvió `status=200`, `Location=null`, título `Foco — Un paso a la vez` y ninguna pantalla de login Vercel.
+
+### API pública HTTPS
+
+```text
+TEST_BASE_URL=https://speed-paradigm-ai-agents-challenge.vercel.app
+node --test tests/integration/api.test.mjs
+tests 8; pass 8; fail 0; cancelled 0; skipped 0; todo 0; exit 0
+```
+
+Pasaron sesión anónima con JSON público sin tokens, cookies HttpOnly/Secure/SameSite=Lax, `no-store`, CRUD real persistente, dos visitantes aislados, acceso ajeno denegado, entradas inválidas, CSRF con cookie válida, edición/estado y borrado confirmado con una lectura posterior. No se repitieron los ataques RLS directos porque ya habían pasado contra la misma base de datos y no cambió su configuración ni el código.
+
+### Chrome público en contextos limpios
+
+```text
+TEST_BASE_URL=https://speed-paradigm-ai-agents-challenge.vercel.app
+npm run test:e2e
+3 passed (11.6s); exit 0
+```
+
+Los tres escenarios pasaron en una única ejecución final, sin omisiones: flujo completo real de visitante en escritorio y móvil; error controlado de conexión con recuperación real; y documento/error accesibles a 320/390/768/1440 px. El flujo principal no utiliza mocks de datos ni de Supabase. Verificó alta/recarga, cambio de estado, búsqueda y filtros combinados, edición móvil persistente, cancelación y confirmación de borrado, teclado/foco/Escape, ausencia de excepciones de página y ausencia de tokens en localStorage. Las tareas sintéticas se eliminaron con sus respectivas sesiones y el navegador volvió al estado vacío.
+
+Testing abrió e inspeccionó las capturas públicas `desktop-task.png` y `mobile-task.png` generadas en `test-results/`; muestran datos sintéticos reales y el contenido principal usable sin desbordamiento ni cortes. El enlace «Ir al tablero» visible en la captura móvil corresponde al foco de navegación por teclado. Las capturas e informes locales permanecen excluidos de Git.
+
+**Dictamen final: APROBADO TÉCNICAMENTE.** No se identificaron defectos de aplicación pendientes. El ajuste del arnés de foco se fundamentó en WAI APG y quedó separado de la revisión de Develop; no se inventaron fallos ni correcciones de aplicación. No se repiten build, auditorías o pruebas adicionales después de aprobar las fronteras pertinentes. Quedan fuera de esta entrega técnica únicamente el texto exacto de las cuatro preguntas y el enlace personal del reclutador (A17/A18), que no se inventan ni se envían sin instrucción expresa.

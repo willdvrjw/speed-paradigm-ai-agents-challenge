@@ -2,9 +2,11 @@
 
 Tablero personal de tareas en español, sin formulario de registro. Permite crear, consultar y editar tareas, cambiar su estado, buscar por título/descripción, filtrar por estado/prioridad y eliminar con confirmación. Cada visitante usa un espacio aislado con datos reales en Supabase.
 
-Repositorio: https://github.com/willdvrjw/speed-paradigm-ai-agents-challenge
+Aplicación publicada: [Abrir Foco](https://speed-paradigm-ai-agents-challenge.vercel.app).
 
-La URL de producción y las comprobaciones reales se registran al desplegar en [docs/aceptacion.md](docs/aceptacion.md). No se necesitan credenciales de demostración: la aplicación crea una sesión anónima automáticamente.
+Repositorio: [speed-paradigm-ai-agents-challenge](https://github.com/willdvrjw/speed-paradigm-ai-agents-challenge).
+
+La aplicación está desplegada en producción con Supabase real. No se necesitan credenciales de demostración: crea una sesión anónima automáticamente. Las comprobaciones ejecutadas y sus límites se documentan en [docs/aceptacion.md](docs/aceptacion.md).
 
 ## Arranque local
 

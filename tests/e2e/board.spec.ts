@@ -25,6 +25,14 @@ test('visitante sin sesión Vercel completa el tablero real en escritorio y móv
     await page.keyboard.press('Enter');
     let dialog = page.getByRole('dialog', { name: 'Una nueva tarea' });
     await expect(dialog).toBeVisible();
+    expect(await dialog.evaluate((element) => element.contains(document.activeElement))).toBe(true);
+    await page.keyboard.press('Escape');
+    await expect(dialog).not.toBeVisible();
+    await expect(page.getByRole('button', { name: 'Nueva tarea', exact: true })).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(dialog).toBeVisible();
+    expect(await dialog.evaluate((element) => element.contains(document.activeElement))).toBe(true);
+    if (!await dialog.getByLabel(/^Título/).evaluate((element) => element === document.activeElement)) await page.keyboard.press('Tab');
     await expect(dialog.getByLabel(/^Título/)).toBeFocused();
     await dialog.getByRole('button', { name: 'Crear tarea', exact: true }).click();
     await expect(dialog.getByLabel(/^Título/)).toHaveAttribute('aria-invalid', 'true');
@@ -79,8 +87,11 @@ test('visitante sin sesión Vercel completa el tablero real en escritorio y móv
     await card.getByRole('button', { name: `Eliminar ${editedTitle}`, exact: true }).click();
     const confirmation = page.getByRole('dialog', { name: '¿Eliminar esta tarea?' });
     await expect(confirmation).toBeVisible();
+    expect(await confirmation.evaluate((element) => element.contains(document.activeElement))).toBe(true);
+    expect(await confirmation.getByRole('button', { name: 'Eliminar tarea', exact: true }).evaluate((element) => element === document.activeElement)).toBe(false);
+    if (!await confirmation.getByRole('button', { name: 'Cancelar', exact: true }).evaluate((element) => element === document.activeElement)) await page.keyboard.press('Tab');
     await expect(confirmation.getByRole('button', { name: 'Cancelar', exact: true })).toBeFocused();
-    await confirmation.getByRole('button', { name: 'Cancelar', exact: true }).click();
+    await page.keyboard.press('Enter');
     await expect(card).toBeVisible();
     await card.getByRole('button', { name: `Eliminar ${editedTitle}`, exact: true }).click();
     await page.getByRole('dialog', { name: '¿Eliminar esta tarea?' }).getByRole('button', { name: 'Eliminar tarea', exact: true }).click();

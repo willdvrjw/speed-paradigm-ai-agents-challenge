@@ -80,3 +80,48 @@ Este archivo registra hechos observados; no equivale a una transcripción comple
 - La revisión autenticada devolvió página Foco 200; API de tareas sin sesión 401; sesión sin Origin 403; sesión con Origin/JSON correctos 503 porque Anonymous Sign-Ins sigue desactivado. La CLI generó un bypass para la revisión y Orquestador lo revocó al terminar, verificando cero restantes.
 - Testing comprobó independientemente denegación de acceso sin sesión, CSRF, JSON malformado, cuerpo excesivo y SELECT directo con rol `anon` denegado. No se ejecutaron ni aprobaron CRUD autenticado, persistencia entre recargas ni ataques con dos usuarios mientras faltaba ese proveedor.
 - El usuario indicó que ambas rutas del panel muestran términos ya aceptados. Orquestador obtuvo y facilitó el enlace SSO exacto de la base de datos mediante CLI; falta que el usuario pueda entrar en Authentication y habilitar el proveedor anónimo. Los términos aceptados no acreditan que ese ajuste esté activo.
+
+## Reanudación tras la confirmación del usuario
+
+- El usuario informó que activó Allow anonymous sign-ins y guardó; solicitó continuar las pruebas. Orquestador reactivó a los mismos Develop y Testing, conservando el equipo de tres roles y la responsabilidad separada de archivos.
+- La primera comprobación del servicio y otra sin caché siguen devolviendo `anonymous_users=false` en el proyecto `enwgedmpnjnlyxjzbica`. Testing confirmó la frontera real con una sola llamada de alta anónima: HTTP 422, código `anonymous_provider_disabled`, mensaje «Anonymous sign-ins are disabled». No se creó usuario ni sesión.
+- Testing detuvo CRUD, RLS autenticado y E2E dependientes; no hay nuevos PASS ni fallos de aplicación inventados. Su dictamen sigue PENDIENTE por configuración externa. Develop no modificó código ni repitió builds sin necesidad.
+- El servidor local sigue respondiendo HTTP 200. La inspección Vercel sigue confirmando el proyecto correcto, Next.js y Node 24.x. No hubo promoción pública.
+- Se solicitó al usuario confirmar el nombre/referencia del proyecto en que guardó el ajuste, para distinguir un cambio en otro proyecto de un guardado no aplicado por el proveedor.
+
+## Auth activa, integración aprobada y promoción
+
+- El usuario aportó una captura del proyecto `foco-tareas` con el acceso anónimo activado. La nueva comprobación del servicio confirmó `external.anonymous_users=true`.
+- Testing ejecutó la integración completa sobre el servicio real: 16 PASS, 0 FAIL, 0 omitidas. Cubrió sesiones anónimas distintas, CRUD persistente, validaciones API/SQL, CSRF, cookies, acceso ajeno y ataques directos a RLS/permisos de propietario. Las tareas sintéticas fueron eliminadas mediante sus propias sesiones.
+- Testing completó Chrome sobre la compilación de producción local: flujo principal 1/1 PASS; error/reintento y estructura 2/2 PASS. Verificó recarga, movimiento, búsqueda/filtros, edición móvil, cancelación/confirmación de borrado y teclado/foco. Ajustó expectativas de foco de su arnés conforme WAI APG, sin modificar el código de aplicación ni inventar un defecto de Develop.
+- Orquestador comprobó también la app alojada: sesión 200, cookies HttpOnly/Secure/Lax, acceso sin sesión 401, creación 201, lectura persistida, edición verificada y borrado seguido de 404. El bypass usado exclusivamente para esa comprobación se revocó en `finally`; cero bypasses restantes.
+- Testing emitió dictamen APTO para promover. Orquestador promovió `dpl_B3nUE5cHdYBNeBH2nasPtvXmYFm4`, respuesta `outcome=promoted`, sin reconstruir ni cambiar el código revisado.
+- URL de producción asignada por Vercel y comprobada sin cookies ni Authorization: https://speed-paradigm-ai-agents-challenge.vercel.app. GET HTTP 200, título Foco, sin redirección ni pantalla de acceso Vercel. Testing realiza la revisión independiente del flujo en esta URL pública antes del dictamen final.
+- La consulta de logs de ese despliegue entre 16:30:50Z y 16:32:23Z devolvió cero errores de runtime, sin más páginas ni intervalos excluidos. Es evidencia de ese intervalo, no una garantía sobre actividad futura.
+
+## Aceptación pública final
+
+- Testing verificó de forma independiente la URL de producción mediante GET sin cookies, Authorization, bypass ni headers Vercel: HTTP 200, sin redirección y con la aplicación Foco.
+- Testing ejecutó las pruebas de API contra HTTPS público: 8/8 PASS, 0 omisiones, exit 0. Comprobó sesiones, cookies HttpOnly/Secure/SameSite=Lax, CRUD persistente, validaciones, CSRF, dos visitantes aislados y borrado; limpió las tareas sintéticas.
+- Testing ejecutó el E2E completo en Chrome sobre la URL pública, con contextos limpios y sin sesión Vercel: 3/3 PASS, 0 omisiones, exit 0. Incluyó CRUD/recarga, búsqueda/filtros, móvil, confirmación de borrado, teclado, cookies y recuperación de error. No se usaron datos simulados para acreditar persistencia.
+- Testing emitió dictamen técnico APROBADO. No se encontraron defectos de aplicación que requirieran cambios de Develop; las correcciones del arnés no se presentan como fallos de aplicación.
+- Develop actualizó únicamente README con la URL pública real; no modificó código de aplicación ni reconstruyó la versión ya comprobada.
+- La última inspección de planes confirmó Vercel `hobby` y Supabase `free`, recurso `available`. No se aceptaron costes ni se actualizaron planes. No quedan bypasses de automatización de estas pruebas.
+- Los únicos pendientes ajenos a la entrega técnica son el texto de las cuatro preguntas y el enlace personal del reclutador. No se inventaron ni se enviaron mensajes o formularios.
+
+## Entrega técnica
+
+| Campo | Resultado verificado |
+| --- | --- |
+| Aplicación | https://speed-paradigm-ai-agents-challenge.vercel.app |
+| Repositorio | https://github.com/willdvrjw/speed-paradigm-ai-agents-challenge |
+| Destino y estado | Producción pública, READY, promoción completada |
+| Despliegue | `dpl_B3nUE5cHdYBNeBH2nasPtvXmYFm4` |
+| Commit de aplicación comprobado y desplegado | `f3d8d5f`; los commits posteriores documentan evidencias y ajustan el arnés de Testing, sin cambios de aplicación |
+| Framework y runtime | Next.js 16.4.6 / Node.js 24.x |
+| Build remoto | 26 segundos; máquina basic del plan Hobby |
+| Base de datos | Supabase Free, recurso available, Auth anónima y RLS comprobados |
+| Acceso | Sin formulario de login ni credenciales de demostración; espacio propio por sesión de navegador |
+| Pruebas públicas independientes | API HTTPS 8/8 PASS; Chrome E2E 3/3 PASS; sin cookies o sesión Vercel preexistentes |
+| Observabilidad | Logs de plataforma revisados en el intervalo indicado: cero errores; no se aprovisionaron servicios adicionales de monitoreo |
+| Credenciales y artefactos | Excluidos de Git y del envío; revisión de archivos rastreados e historial sin coincidencias de valores sensibles examinados |

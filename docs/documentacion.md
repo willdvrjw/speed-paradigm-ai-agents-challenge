@@ -103,3 +103,19 @@ Consultadas el 2026-11-23 antes de crear las pruebas independientes:
 - La comprobación sin credenciales redirige a Vercel (302); por tanto no acredita una URL pública. Se consultó https://vercel.com/docs/cli/curl para revisar el despliegue protegido. La CLI creó un bypass de automatización y después reenvió incorrectamente `--global-config` a curl; la comprobación se completó usando el bypass existente solo en cabecera y en memoria, sin imprimirlo.
 - Se consultó https://vercel.com/docs/rest-api/projects/update-protection-bypass-for-automation para revocar ese bypass al acabar. La verificación posterior confirmó cero bypass de automatización restantes. No se deshabilitó la protección de despliegues.
 - La página protegida respondió 200 con título Foco. API de tareas sin sesión: 401. Creación de sesión sin Origin: 403. Con Origin y JSON correctos: 503, coherente con el proveedor anónimo aún desactivado. Todas esas respuestas privadas incluyeron `no-store`.
+
+## Reanudación de la verificación de Auth
+
+- El usuario informó que activó Allow anonymous sign-ins y guardó. Antes de continuar se volvió a consultar https://supabase.com/docs/guides/auth/auth-anonymous y https://vercel.com/docs/deployments/promoting-a-deployment.
+- La lectura normal y una lectura con cache-busting/no-cache de los ajustes públicos del proyecto `enwgedmpnjnlyxjzbica` devolvieron HTTP 200 con `external.anonymous_users=false`; la segunda respuesta indicó `CF-Cache-Status: DYNAMIC`, sin Age.
+- Testing ejecutó una sola llamada real `signInAnonymously()` con URL y clave publicable: Supabase respondió HTTP 422, `anonymous_provider_disabled`, «Anonymous sign-ins are disabled», sin crear usuario ni sesión. Se detuvieron las comprobaciones dependientes.
+- Se solicitó confirmar si el ajuste fue guardado en `foco-tareas` con esa referencia. No se cambió el código, no se consumieron altas repetidas ni se promovió el despliegue ante esta frontera rota.
+
+## Auth habilitada y validación para promoción
+
+- El usuario aportó una captura del proyecto correcto con Allow anonymous sign-ins activo. La nueva comprobación pública del proyecto confirmó `external.anonymous_users=true`.
+- Testing reanudó la integración real: 16 comprobaciones pasaron, sin fallos ni omisiones; incluyen sesiones, CRUD, persistencia, aislamiento API y ataques directos RLS/validaciones SQL. Continúa la revisión completa en Chrome.
+- Antes de revisar la versión alojada y promover se consultaron otra vez https://vercel.com/docs/rest-api/projects/update-protection-bypass-for-automation y https://vercel.com/docs/deployments/promoting-a-deployment. La comprobación del despliegue protegido usará un bypass temporal solo en memoria, que se revocará al acabar; la aceptación pública posterior no lo usará.
+
+- Testing consultó https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/ para revisar foco contenido, navegación por teclado y retorno de foco de los diálogos; corrigió expectativas del arnés de pruebas sin cambios de aplicación.
+- Tras el dictamen APTO y el CRUD HTTPS comprobado, se promovió el mismo despliegue de producción. La URL pública asignada es https://speed-paradigm-ai-agents-challenge.vercel.app y respondió HTTP 200 a una petición sin cookies ni Authorization. La verificación pública independiente no usa bypass ni una sesión Vercel.
