@@ -22,7 +22,7 @@ Se leyeron `AGENTS.md`, `agents/develop.md` y `agents/testing/DIRECTRICES.md`. A
 | A10 | Calidad reproducible | PENDIENTE | Compilación, tipos y pruebas significativas ejecutadas. Registrar comandos, versiones y resultados. |
 | A11 | Ausencia de claves API y secretos en repositorio | PENDIENTE | Revisar archivos rastreados, historial y bundle cliente; `.gitignore` existe, pero no hay repositorio todavía. |
 | A12 | Repositorio GitHub público o accesible | PENDIENTE | Falta URL real y comprobación del acceso del evaluador. |
-| A13 | Despliegue gratis en producción | PENDIENTE | Falta URL real y estado de producción. Vercel requiere habilitar acceso del equipo. |
+| A13 | Despliegue gratis en producción | PENDIENTE | Orquestador comprobó acceso CLI al espacio personal `willdvrs-projects`, plan Hobby. Todavía faltan aplicación publicada y URL de producción real; el acceso CLI no acredita despliegue. |
 | A14 | URL pública sin autenticación Vercel | PENDIENTE | GET sin cookies/Authorization y navegador privado sin sesión. Confirmar que no sea vista previa ni enlace de bypass. |
 | A15 | README con arranque y demostración | PENDIENTE | Faltan instrucciones reproducibles, variables por nombre y recorrido de evaluación. |
 | A16 | Credenciales de prueba si hay login | PENDIENTE | Diseño previsto sin formulario de login. Confirmar comportamiento final; si se mantiene, indicar que no se necesitan credenciales. |
@@ -97,3 +97,43 @@ Se inspeccionaron `docs/arquitectura.md` y `docs/documentacion-develop.md`, adem
 No se encontraron defectos reproducibles en los Markdown, TOML o arquitectura revisados. La falta de implementación, integración y despliegue se conserva como trabajo pendiente, sin inventar fallos para simular un ciclo de corrección. El análisis TOML se ejecutó correctamente mediante script por stdin después de corregir una incidencia de comillas de la invocación de Python; no se modificó ningún archivo de aplicación.
 
 El dictamen global sigue **PENDIENTE**. Vercel deniega acceso al equipo (403) y Supabase aún requiere conexión, según el estado comunicado por Orquestador. Ninguna comprobación documental anterior acredita persistencia, seguridad ejecutada ni disponibilidad pública.
+
+## Preparación de la revisión de implementación
+
+El usuario autorizó vincular y desplegar la aplicación. Orquestador delegó implementación real a Develop y pruebas independientes a Testing. Esta fase no modifica código de aplicación ni acredita una integración operativa.
+
+- `tests/tasks.test.mjs`: reglas de título, descripción, enumeraciones, tipos, campos extra, edición parcial e identificadores.
+- `tests/security.test.mjs`: Origin exacto, ausencia, `null`, dominios parecidos, puertos/protocolos diferentes y cabeceras reenviadas manipuladas.
+- `tests/integration/api.test.mjs`: sesiones distintas, cookies privadas, no-store, CRUD persistente, validación, acceso ajeno y CSRF mediante peticiones HTTP reales a `TEST_BASE_URL`.
+- `tests/integration/rls.test.mjs`: dos usuarios Supabase anónimos y ataques directos contra PostgreSQL/RLS con la clave pública; no utiliza una clave administrativa. Elimina las tareas creadas por la prueba. Las identidades anónimas emitidas permanecen sujetas a la retención del proveedor.
+- Se comprobó sintaxis de los cuatro archivos con Node.js `--check`; esto solo acredita sintaxis, no que los escenarios funcionen.
+- Las pruebas de aplicación, integración y navegador siguen PENDIENTES hasta disponer del código, servicio real y URL. Si falta configuración, una prueba omitida no se contará como PASS.
+
+Fuentes oficiales: [Node.js test runner](https://nodejs.org/docs/latest-v24.x/api/test.html), [TypeScript en Node.js](https://nodejs.org/docs/latest-v24.x/api/typescript.html), [Playwright API](https://playwright.dev/docs/api-testing) y [Supabase RLS](https://supabase.com/docs/guides/database/postgres/row-level-security). Sus decisiones están registradas también en `docs/documentacion.md`.
+
+### Vinculación y límite externo de Supabase
+
+Testing leyó `.vercel/project.json`: proyecto `speed-paradigm-ai-agents-challenge`, ID `prj_NLhkN9WSAVR2Clr4rMgq7IquhRFH`, organización `team_aSBnvwYurH5FI3MxvxM3zssf`. Esto acredita la vinculación local y coincide con el proyecto que Orquestador inspeccionó; no acredita una aplicación desplegada. Orquestador informó framework Next.js y runtime Node 24 configurados.
+
+`git check-ignore` confirma exclusión de `.env.local`, `.vercel/project.json` y `.tools/vercel-config/auth.json`. `.env.example` no está ignorado. No se leyó contenido de secretos para esta comprobación.
+
+La provisión Supabase Free requiere aceptación personal de términos, según el resultado `integration_terms_acceptance_required` comunicado por Orquestador. No hay PASS de base de datos ni de persistencia. Develop tiene autorización para implementar el código real con el contrato acordado mientras se resuelve ese requisito; Testing verificará reglas, tipos y compilación antes de la integración, manteniendo cada resultado por separado.
+
+### Primera ejecución de reglas sobre código real
+
+Comando ejecutado por Testing con Node.js 24.22.3:
+
+```text
+node --test tests/tasks.test.mjs tests/security.test.mjs
+tests 9; pass 9; fail 0; skipped 0; exit 0
+```
+
+PASS de estas nueve pruebas sobre `lib/tasks.ts` y `lib/security.ts` reales: normalización/defaults; título; descripción/enumeraciones; cuerpo y campos extra; actualización parcial; UUID; Origin permitido; Origin ajeno/ausente/null; cabeceras reenviadas manipuladas. Este resultado no acredita todavía las restricciones SQL ni las rutas HTTP. Se observaron advertencias de detección ESM porque `package.json` aún estaba en escritura, sin fallo de ejecución; el scaffold final y su build siguen pendientes de revisión.
+
+Se prepararon `playwright.config.ts` y `tests/e2e/board.spec.ts` contra los componentes reales: contexto de navegador limpio, CRUD y recarga, búsqueda/filtros, viewport móvil, teclado/foco, confirmación/cancelación de borrado, cookies y error/reintento. El flujo principal no intercepta ni simula la persistencia; un caso separado aborta exclusivamente la conexión inicial para verificar el estado de error. Aún no se ejecutaron estos escenarios de navegador.
+
+### Revisión previa de la migración
+
+Testing inspeccionó `supabase/migrations/202611230001_create_tasks.sql` antes de su aplicación. No encontró un bloqueo documental: transacción, propietario derivado de UID, restricciones de campos, RLS explícito con cuatro políticas, `anon` sin privilegios, UPDATE limitado a columnas editables y trigger con `search_path` fijo. La reasignación `owner_id` está denegada por los permisos de columna y también protegida por `WITH CHECK`; un error de esa prueba no se atribuirá solo a RLS.
+
+Esta revisión permite a Orquestador continuar con la aplicación de la migración al recurso nuevo autorizado. Aplicación, Auth anónima y pruebas directas siguen PENDIENTES. Se consultaron [PostgreSQL GRANT](https://www.postgresql.org/docs/current/sql-grant.html), [Row Security](https://www.postgresql.org/docs/current/ddl-rowsecurity.html) y [Triggers](https://www.postgresql.org/docs/current/trigger-definition.html).

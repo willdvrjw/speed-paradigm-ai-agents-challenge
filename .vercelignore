@@ -1,0 +1,13 @@
+.git/
+.codex/
+.tools/
+.artifacts/
+.vercel/
+.env*
+node_modules/
+.next/
+coverage/
+playwright-report/
+test-results/
+debug.log
+*.tsbuildinfo

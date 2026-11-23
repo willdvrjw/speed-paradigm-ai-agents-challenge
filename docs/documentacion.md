@@ -36,3 +36,62 @@ Las fuentes se consultan antes de los cambios correspondientes. La fecha de trab
 - Control del navegador indisponible. La revisión automática rechazó leer una ventana existente por contener contenido privado ajeno al encargo. No se accedió a ese contenido ni se intentó eludir el rechazo.
 
 Las fuentes y decisiones específicas de Develop están en `docs/documentacion-develop.md`; las fuentes de revisión están en `docs/aceptacion.md`.
+
+## Comprobación tras instalar la extensión de VS Code
+
+- Fuente oficial consultada: https://vercel.com/docs/mcp (autorización OAuth de la conexión Vercel).
+- `code --list-extensions --show-versions` confirma `frenco.vscode-vercel@2.2.1`. La consulta emitió advertencias de permisos al intentar crear logs de VS Code, pero devolvió la lista de extensiones.
+- La conexión Vercel devolvió cero equipos en `list_teams`; `list_projects` con el alcance explícito `sistemas-1998` devolvió HTTP 403 por falta de autorización del equipo.
+- La instalación de la extensión no acredita autorización de esta conexión. Se solicita el consentimiento oficial del equipo mediante `authorize_team_access`; no se almacenan enlaces temporales ni credenciales en el repositorio.
+
+## Alternativa al consentimiento caducado
+
+- El usuario mostró dos enlaces distintos que Vercel presenta como caducados inmediatamente; la causa no está confirmada.
+- Fuentes oficiales consultadas antes de preparar la alternativa: https://vercel.com/docs/cli/login y https://vercel.com/docs/cli/global-options.
+- Se prepara el inicio de sesión oficial mediante la CLI local existente, con configuración y caché dentro de `.tools/`, excluido de Git. El usuario debe completar personalmente el acceso; esta preparación no publica proyectos ni acepta planes.
+
+## Inicio de sesión CLI comprobado
+
+- Tras la confirmación del usuario, `vercel login` finalizó correctamente como `cherylbextor-7226`.
+- `vercel whoami --format json` confirmó el espacio personal `willdvrs-projects`, rol OWNER y plan `hobby`; no hay proyecto vinculado. Este espacio es distinto del equipo `sistemas-1998` del conector y no se asume acceso a ese equipo.
+- `vercel project list --query speed-paradigm --json --scope willdvrs-projects` terminó correctamente y devolvió cero proyectos coincidentes: el acceso por CLI funciona, pero no existe un despliegue acreditado de esta prueba.
+- `git check-ignore .tools/vercel-config/auth.json` confirma que las credenciales locales quedan excluidas. Se excluye también `/debug.log` como artefacto local, sin leer ni versionar su contenido.
+
+## Fuentes de Testing para pruebas ejecutables
+
+Consultadas el 2026-11-23 antes de crear las pruebas independientes:
+
+| Tema | Fuente oficial | Aplicación |
+| --- | --- | --- |
+| Runner Node.js 24 | https://nodejs.org/docs/latest-v24.x/api/test.html | Pruebas de reglas y seguridad mediante `node:test` y `node:assert`, sin una dependencia para reglas puras. |
+| TypeScript en Node.js 24 | https://nodejs.org/docs/latest-v24.x/api/typescript.html | Importar módulos TypeScript puros con extensión explícita; el runner no sustituye la comprobación de tipos. |
+| Playwright API | https://playwright.dev/docs/api-testing | Comprobar precondiciones y persistencia mediante solicitudes reales; limpiar únicamente los registros creados por la prueba. |
+| Supabase RLS | https://supabase.com/docs/guides/database/postgres/row-level-security | Dos identidades independientes y ataques de lectura, actualización, borrado y reasignación de propietario. |
+
+## Vinculación y provisión autorizadas
+
+- El usuario pidió explícitamente vincular y desplegar la aplicación en el espacio personal autenticado `willdvrs-projects`.
+- Antes de crear recursos se consultaron https://vercel.com/docs/cli/link, https://vercel.com/docs/cli/integration, https://vercel.com/docs/plans/hobby, https://vercel.com/marketplace/supabase, https://supabase.com/docs/guides/integrations/vercel-marketplace y https://supabase.com/pricing.
+- `project inspect --non-interactive` confirmó `link_required`. Se prepara un proyecto nuevo con el nombre del repositorio; no se reutilizan aplicaciones ajenas.
+- `integration categories` e `integration discover --category storage` confirmaron Supabase como producto disponible. Solo se permite el plan Free de coste cero; no se aceptan planes de pago.
+- Orquestador delegó implementación a Develop y pruebas independientes a Testing. Se mantiene la responsabilidad de infraestructura y despliegue en Orquestador.
+
+- `project create`, `link --yes --project ... --scope willdvrs-projects` y la inspección posterior confirmaron el proyecto `prj_NLhkN9WSAVR2Clr4rMgq7IquhRFH`. Se ajusta únicamente este proyecto a Next.js y Node 24 según https://vercel.com/docs/cli/project y https://vercel.com/docs/rest-api/projects/update-an-existing-project.
+- Vercel añadió una regla `.env*` duplicada al vincular que anulaba la excepción de `.env.example`; se elimina la duplicación y se mantienen excluidos `.env.local` y `.vercel/`.
+- La provisión `integration add supabase --billing-plan free` devolvió `integration_terms_acceptance_required`. Se solicitó al usuario completar la pantalla oficial antes de reintentar; no se ha creado una base de datos todavía.
+
+- Para preparar el repositorio accesible se consultaron https://docs.github.com/en/rest/repos/repos#create-a-repository-for-the-authenticated-user y https://git-scm.com/docs/git-credential. GitHub conectado confirma `willdvrjw`; la comprobación autorizada del gestor de credenciales fuera del sandbox confirmó esa misma cuenta sin imprimir credenciales. Si es necesario usar la API para crear el repositorio, las credenciales se conservarán solo en memoria y se verificará la identidad antes de cualquier creación.
+
+## Base de datos real y exclusiones del despliegue
+
+- El usuario confirmó la aceptación en plan Free. Vercel aprovisionó `foco-tareas` y lo conectó a producción y desarrollo. Se descargaron variables a `.env.local`, nunca se imprimieron sus valores.
+- Se consultó https://vercel.com/docs/deployments/vercel-ignore antes de crear `.vercelignore` con exclusión explícita de configuración local, credenciales, herramientas, cachés y artefactos.
+- Se consultaron https://node-postgres.com/features/queries y https://node-postgres.com/features/ssl para aplicar la migración revisada por conexión PostgreSQL local, con credenciales solo en memoria. La app no usará credenciales administrativas.
+- Para habilitar y verificar sesiones sin formulario se consultaron https://supabase.com/docs/guides/auth/auth-anonymous y https://supabase.com/docs/reference/api/v1-update-auth-service-config. El GET de ajustes Auth del proyecto real respondió HTTP 200; falta verificar altas anónimas.
+
+- Fuentes de implementación de Develop: `docs/documentacion-develop.md`. Fuentes SQL revisadas por Testing antes de aplicar: https://www.postgresql.org/docs/current/sql-grant.html, https://www.postgresql.org/docs/current/ddl-rowsecurity.html y https://www.postgresql.org/docs/current/trigger-definition.html.
+- La conexión PostgreSQL con verificación TLS rechazó inicialmente la CA no instalada. Se consultó https://supabase.com/docs/guides/platform/ssl-enforcement y el código oficial https://github.com/supabase/supabase/blob/master/apps/studio/hooks/custom-content/custom-content.json para localizar la descarga actual de la CA. Se conservará validación del certificado y del nombre de host.
+- GET de configuración pública Auth confirmó `external.anonymous_users=false`. La sesión SSO aislada requiere autenticación y el host de navegador conectado está indisponible; se pidió al usuario habilitar el proveedor anónimo en el panel del proyecto correcto. No se sustituye por claves administrativas en runtime.
+
+- La descarga S3 de la CA oficial agotó el tiempo de espera incluso fuera del sandbox. Se localizaron las CA públicas incluidas en el CLI oficial de Supabase: https://github.com/supabase/cli/blob/375df86d9816aaa7417805ea7fc04a278970adf8/apps/cli/src/command-internal/supabase-ca-templates/prod-ca-2021.ts y `prod-ca-2025.ts` en el mismo directorio. Se descargaron desde ese commit y la conexión PostgreSQL cifrada con validación de CA y hostname terminó correctamente; `public.tasks` todavía no existía.
+- Orquestador y Testing revisaron `supabase/migrations/202611230001_create_tasks.sql` antes de aplicarla. Se aplicará únicamente en la base nueva del proyecto `enwgedmpnjnlyxjzbica`; el resultado local guardará hash de la migración, RLS, políticas y restricciones, nunca credenciales.

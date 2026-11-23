@@ -31,6 +31,7 @@ RLS se habilita expresamente. Las políticas se limitan al rol `authenticated`, 
 | POST `/api/session` | Inicializa/reanuda el espacio y fija cookies; sin credenciales en JSON. |
 | GET `/api/tasks` | Lista únicamente las tareas del usuario verificado, ordenadas por creación. |
 | POST `/api/tasks` | Valida y crea una tarea del usuario. |
+| GET `/api/tasks/[id]` | Recupera una tarea propia; devuelve 404 para registros ausentes o ajenos. |
 | PATCH `/api/tasks/[id]` | Valida y actualiza una tarea propia; devuelve 404 si no existe o no es accesible. |
 | DELETE `/api/tasks/[id]` | Elimina una tarea propia; devuelve 404 si no existe o no es accesible. |
 
@@ -48,7 +49,11 @@ El formulario usa un diálogo nativo accesible para creación y edición. La eli
 - Desarrollo: TypeScript y tipos de Node/React; Testing definirá la herramienta de pruebas pertinente.
 - Sin SDK de IA, pagos, analítica o almacenamiento adicional. Los tres agentes pertenecen al proceso de construcción, no son llamadas de pago de la aplicación.
 
-Las versiones exactas se resolverán antes de instalar y quedarán fijadas mediante el archivo de bloqueo. La implementación comenzará cuando el Orquestador confirme el proyecto y la integración reales.
+Las versiones se consultaron en el registro npm y quedaron fijadas mediante `package.json` y `package-lock.json`: Next 16.4.6, React 19.3.1, TypeScript 7.0.2, Supabase SSR 0.12.7 y Supabase JS 2.119.2. La implementación se realizó tras confirmar Orquestador el proyecto y la integración reales. Playwright Test 1.65.1 es una dependencia de desarrollo para la revisión de Testing.
+
+Los límites se comprueban en caracteres Unicode y el título se recorta en la API. Los cuerpos JSON tienen un máximo de 8 KiB. Las respuestas omiten el propietario y todos los tokens. La página puede prerenderizar la interfaz vacía; ninguna tarea ni cookie se lee desde ese prerenderizado, y las API privadas son dinámicas con `no-store`.
+
+El esquema otorga INSERT solo a las columnas de negocio y propietario, y UPDATE solo a las columnas de negocio. El identificador y las fechas proceden de PostgreSQL; un trigger actualiza `updated_at`. La validación SQL rechaza títulos compuestos únicamente por whitespace o con caracteres de control.
 
 ## Verificación esperada
 
