@@ -23,6 +23,7 @@ export default defineConfig({
     baseURL: process.env.TEST_BASE_URL ?? 'http://localhost:3000',
     browserName: 'chromium',
     channel: accessSmoke ? undefined : process.env.PLAYWRIGHT_CHANNEL ?? 'chrome',
+    launchOptions: accessSmoke ? { timeout: 20_000 } : undefined,
     headless: true,
     viewport: { width: 1440, height: 1000 },
     locale: 'es-CO',

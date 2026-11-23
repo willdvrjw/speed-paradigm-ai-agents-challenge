@@ -15,10 +15,12 @@ test('acceso público con sesión automática y tarea persistente propia', async
   page.on('pageerror', (error) => pageErrors.push(error.name));
   try {
     expect((await context.cookies()).length).toBe(0);
-    const session = page.waitForResponse((response) => response.url() === `${origin}/api/session` && response.request().method() === 'POST');
-    const mainResponse = await page.goto('/');
+    const [sessionResponse, mainResponse] = await Promise.all([
+      page.waitForResponse((response) => response.url() === `${origin}/api/session` && response.request().method() === 'POST'),
+      page.goto('/'),
+    ]);
     expect(mainResponse?.status()).toBe(200);
-    expect((await session).status()).toBe(200);
+    expect(sessionResponse.status()).toBe(200);
     await expect(page.getByRole('button', { name: 'Nueva tarea', exact: true })).toBeEnabled();
     await expect(page.getByRole('button', { name: /iniciar sesión|log in|sign in/i })).toHaveCount(0);
     const authCookies = (await context.cookies()).filter((cookie) => cookie.name.startsWith('sb-'));

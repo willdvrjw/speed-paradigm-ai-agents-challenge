@@ -13,7 +13,9 @@ jobs:
   webkit:
     if: github.event.repository.private == false
     runs-on: ubuntu-24.04
-    timeout-minutes: 8
+    container:
+      image: mcr.microsoft.com/playwright:v1.65.1-noble@sha256:1507cbfc550a63a6b7396791ca4f00df17beb56342d2447b3f106c306f525579
+    timeout-minutes: 5
     env:
       TEST_BASE_URL: https://speed-paradigm-ai-agents-challenge.vercel.app
       PLAYWRIGHT_ACCESS_SMOKE: '1'
@@ -25,6 +27,5 @@ jobs:
         with:
           node-version: '24'
       - run: npm ci
-      - run: npx playwright install --with-deps webkit
       - name: Verify public WebKit mobile access
         run: npx playwright test --project=webkit-mobile
