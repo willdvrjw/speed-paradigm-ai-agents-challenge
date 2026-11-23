@@ -75,6 +75,8 @@ $env:TEST_LARGE_COLLECTION='1'
 node --env-file=.env.local node_modules/playwright/cli.js test
 ```
 
+La [matriz de calidad funcional](docs/calidad-final.md) detalla los flujos probados, las correcciones y las decisiones de alcance revisadas.
+
 ## Despliegue gratuito
 
 1. Usa **Supabase Free** y un espacio **Vercel Hobby**; importa el repositorio con preset Next.js, raíz del proyecto y Node.js 24.

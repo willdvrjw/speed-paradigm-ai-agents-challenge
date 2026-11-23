@@ -4,11 +4,13 @@ Responsable: Testing, independiente de Develop. Fecha: 2026-11-23, America/Bogot
 
 **Dictamen: requisitos técnicos comprobados, PASS. Entrega al reclutador, PENDIENTE de confirmar las respuestas personales y realizar el envío único.** Orquestador confirmó que las cuatro preguntas y el enlace personal ya fueron recibidos y revisados privadamente; no se publican su texto, enlace ni token. Esta auditoría volvió a ejecutar las comprobaciones; no se limita a citar la aceptación anterior. La referencia literal es [docs/enunciado.md](enunciado.md).
 
-**Estado posterior de acceso:** versión b2e098a publicada en la URL principal, con cuatro configuraciones de navegador aprobadas: Chrome, Edge y Firefox en Windows, y WebKit con emulación móvil en Linux mediante CI real. Las ayudas sin JavaScript/cookies están verificadas. El bloqueo de WebKit Windows y la primera CI cancelada se conservan como historial; no se cuentan como éxitos ni como fallos de aplicación. No se afirma haber probado Safari en un iPhone físico ni todos los navegadores, dispositivos, países o redes.
+**Estado actual de calidad:** fuente d260a4f, despliegue `dpl_BJgur6hRfLTYdeqnow6fN3vLrrar` promovido a la URL principal. Nueva compilación/tipos PASS; reglas 9/9, API/RLS 16/16 y Chrome completo 13/13 en producción local. La misma fuente desplegada pasó API HTTPS 8/8 y dos regresiones 2/2; GET canónico independiente 200 sin cookies/login/redirección. La [matriz funcional final](calidad-final.md) distingue datos reales, errores controlados y deuda de escala/edición entre pestañas.
+
+La compatibilidad anterior de cuatro configuraciones corresponde a b2e098a: Chrome, Edge y Firefox en Windows y WebKit móvil en Linux/CI. Las ayudas sin JS/cookies siguen verificadas en la nueva suite. Los bloqueos Windows y CI1 son historial, no éxitos ni fallos de app; no se afirma Safari/iPhone físico ni prueba de todos los países/redes. El cambio final usa React/API existentes, sin nuevas APIs de navegador; no se reinstalaron motores ni se repitió CI innecesariamente.
 
 Aplicación de producción: https://speed-paradigm-ai-agents-challenge.vercel.app . Repositorio público: https://github.com/willdvrjw/speed-paradigm-ai-agents-challenge . No hacen falta usuario ni contraseña: la interfaz no tiene formulario de login y crea una sesión anónima aislada.
 
-La auditoría literal inicial comenzó en HEAD `40f373e`; en esa fase la fuente de aplicación coincidía con `f3d8d5f` y el despliegue `dpl_B3nUE5cHdYBNeBH2nasPtvXmYFm4`. Esa comparación se conserva como evidencia histórica. La ampliación posterior de acceso sí incluye correcciones de aplicación de Develop: fuente `b2e098a`, despliegue `dpl_DmwUnKjZstWcL3xebGTRiPDg8nFS`, promovido a la misma URL pública. Testing conserva independencia y solo modifica pruebas/documentación.
+Historial: la auditoría literal inicial comenzó en HEAD `40f373e`, con aplicación f3d8d5f/dpl_B3nUE5cHdYBNeBH2nasPtvXmYFm4. La ampliación de acceso corrigió b2e098a/dpl_DmwUnKjZstWcL3xebGTRiPDg8nFS. La revisión funcional final añadió correcciones reales de concurrencia/listado en d260a4f, ahora desplegada. Testing conserva independencia y solo modifica pruebas/documentación.
 
 ## Matriz literal y evidencia actual
 
@@ -21,16 +23,16 @@ Las citas breves pertenecen al texto recibido; las comprobaciones de calidad adi
 | E03 | «Orquestador: el agente principal, con su CLAUDE.md (o AGENTS.md), que reparte el trabajo» | PASS | `AGENTS.md` rastreado y accesible públicamente; delegaciones reales del Orquestador a Develop y Testing y responsabilidades registradas en `docs/registro-agentes.md`. |
 | E04 | «Develop: un subagente que programa, con su propio .md de cómo programar» | PASS | `agents/develop.md` y `.codex/agents/develop.toml` versionados; Develop implementó los archivos reales de aplicación y comunicó sus comprobaciones. |
 | E05 | «Testing: un subagente con un .md de DIRECTRICES que Develop tiene que cumplir» | PASS | `agents/testing/DIRECTRICES.md` y su TOML versionados; Develop recibió esas directrices y Testing revisó su resultado real sin editar aplicación. |
-| E06 | «Testing revisa lo que hace Develop y le devuelve los fallos hasta que todo pasa» | PASS | Revisión real; en la ampliación posterior Testing reprodujo dos barreras de uso (sin JavaScript y cookies desactivadas), Develop las corrigió en b2e098a y Testing comprobó 2/2 regresiones correctas localmente y por HTTPS. AUD-01 sigue identificado por separado como infraestructura. |
+| E06 | «Testing revisa lo que hace Develop y le devuelve los fallos hasta que todo pasa» | PASS | Nueva revisión reprodujo QA-01/02 contra producción: pérdida de segunda selección concurrente y truncamiento1005→1000. Develop corrigió, Testing verificó local/HTTPS; también devolvió TS2339 de la primera corrección y comprobó build/tipos correctos después. Las barreras b2e098a e infraestructura AUD-01 se conservan por fase. |
 | E07 | «haz una app del tema que quieras (tema libre)» | PASS | Foco es un tablero funcional de tareas en español; Chrome comprobó el recorrido completo con datos reales. |
 | E08 | «con una base de datos gratuita: Firebase o Supabase» | PASS | Supabase Free real, estado available comprobado por Orquestador; pruebas directas contra su PostgreSQL/RLS y persistencia desde la app pasan. |
-| E09 | «publicada gratis en Vercel (o similar)» | PASS | Despliegue READY/production en Vercel Hobby, verificado por Orquestador; URL de producción HTTP 200 y flujo HTTPS funcional. |
+| E09 | «publicada gratis en Vercel (o similar)» | PASS | Fuente d260a4f/dpl_BJgur6hRfLTYdeqnow6fN3vLrrar READY/production en Vercel Hobby; misma compilación promovida, HTTP 200 canónico y regresiones/APIHTTPS correctas. |
 | E10 | «la dirección de la app tiene que ser PÚBLICA» | PASS | GET de Testing sin cookies, Authorization ni bypass devuelve 200, `Location=null`, título Foco y ninguna pantalla de acceso Vercel. |
 | E11 | «Ábrela en una ventana de incógnito sin haber entrado en Vercel» | PASS | Chrome mediante contextos Playwright aislados equivalentes a incógnito. El test principal comprobó explícitamente cero cookies antes de navegar y completó el flujo público sin sesión Vercel. |
 | E12 | «En Vercel, quita la protección en Settings › Deployment Protection (Vercel Authentication)» | PASS | AUD-01 corregido por Orquestador: lectura posterior `ssoProtection=null`, `protectionBypass={}`. Testing comprobó HTTP 200 sin redirección tanto en producción como en el URL directo del despliegue, sin bypass. |
 | E13 | «pásanos la dirección de producción, no la de una vista previa» | PASS | Se entrega `https://speed-paradigm-ai-agents-challenge.vercel.app`; corresponde al despliegue promovido con target production. El URL directo se usa solo como evidencia adicional. |
 | E14 | «No hace falta gastar dinero: usa planes gratuitos» | PASS | Planes actuales comprobados por Orquestador: Vercel Hobby y Supabase Free/available. No se aceptaron costes ni se actualizó un plan. |
-| E15 | «No subas claves de API al repositorio» | PASS | Nuevo escaneo de Testing sobre árbol rastreado, cuatro commits e historial: cero coincidencias con las siete claves/credenciales configuradas comparadas en memoria, incluidas claves publicables reales, y cero patrones de credenciales o archivos prohibidos. Véase el alcance del escaneo abajo. |
+| E15 | «No subas claves de API al repositorio» | PASS | Testing examinó el nuevo bundle 14 archivos frente a 12 valores configurados: 0 coincidencias. Orquestador volvió a escanear fuente/historia sin claves ni archivos prohibidos; resultados previos y alcance se conservan abajo. Valores comparados solo en memoria, nunca publicados. |
 | E16 | «No hace falta vídeo» | PASS | No se considera un entregable obligatorio ni se sustituye la app por un vídeo. La evidencia es URL real, código, pruebas y dictamen; Playwright tiene video desactivado. |
 | E17 | «Al entregar, con tu enlace personal» | PENDIENTE | Enlace recibido y revisado privadamente por Orquestador. Queda pendiente el envío único; el enlace y su token no se publican en Git ni se envía un formulario por iniciativa de Testing. |
 | E18 | «el enlace de la app» | PASS | URL real de producción incluida al principio de este informe y en README. |
@@ -38,7 +40,17 @@ Las citas breves pertenecen al texto recibido; las comprobaciones de calidad adi
 | E20 | «un usuario y una contraseña de prueba, si la app tiene login» | PASS | La condición no aplica: no hay formulario de login ni contraseña. Chrome accede directamente y la sesión anónima se establece automáticamente. |
 | E21 | «las respuestas a 4 preguntas cortas» | PENDIENTE | Las cuatro preguntas fueron recibidas y revisadas privadamente por Orquestador. Faltan confirmar las respuestas personales y realizar el envío único; no se publican las preguntas ni se inventan respuestas. |
 
-## Ejecuciones de la auditoría literal inicial
+## Revisión funcional final de d260a4f
+
+[calidad-final.md](calidad-final.md) contiene el inventario de todas las funciones declaradas: crear, consultar/recargar, editar/cancelar todos los campos, estados, prioridades, 32 combinaciones de filtros/búsqueda/limpiar, borrar/cancelar/confirmar, límites Unicode, vacío/carga/error y recuperación por cada mutación, sesión, CSRF/RLS y colección1005. Los fallos controlados no sustituyen las comprobaciones de persistencia real.
+
+Resultado nuevo: build y typecheck exit 0 tras devolver/corregir TS2339; reglas 9/9; audit 0 vulnerabilidades conocidas informadas; integración pública/Supabase16/16 (7.33s); Chrome 13/13 en 44.8 s con producción local y BD real. Sobre la compilación HTTPS corregida: API 8/8 en 8.61 s y dos regresiones 2/2 en 12.2 s, sin omisiones ni bypass; no se repitió RLS directo sobre el mismo esquema. Tras promover, Testing comprobó un GET canónico sin cookies/Authorization: 200, Location=null, título Foco y ninguna cookie inicial/login. Orquestador verificó el alias contra el ID exacto y API privada 401+no-store.
+
+Se inspeccionaron las capturas nuevas de escritorio/móvil y se cerró el servidor de pruebas propio 85026, sin procesos ni listeners 3000 restantes y sin terminar otros procesos. Las tareas sintéticas fueron limpiadas; bulk por nuevo propietario con count 0 verificado. No hubo 502 ni rate-limit. La metadata TLS/read-only aportada por Orquestador confirma RLS,4 políticas,6 restricciones validadas,2 índices, trigger activo y denegación de transferencia de dueño.
+
+README final revisado: enlaces y demo claros para el reclutador, tres roles, stack, seguridad, instalación y pruebas reproducibles; el bloque optativo activa explícitamente volumen 1005 y carga .env.local en el proceso de pruebas. No contiene el enlace personal ni preguntas/respuestas privadas. Quedan documentados render/filtrado de colección completa, última escritura al editar la misma fila entre pestañas y límites intencionales de identidad/planes gratuitos. No quedan fallos reproducidos abiertos dentro del alcance ejecutado; no se promete «cero deuda».
+
+## Historial: ejecuciones de la auditoría literal inicial
 
 Se usó Node.js 24.22.3 portable del proyecto y npm 11.19.1, con PATH y caché solo del proceso. Las invocaciones npm se realizaron mediante `.tools/node-v24.22.3-win-x64/npm.cmd`; en un entorno con Node 24 instalado equivalen a los comandos siguientes.
 
@@ -71,7 +83,7 @@ Chrome comprueba búsqueda y filtros combinados, recarga, edición móvil, cance
 
 Las tareas sintéticas se eliminaron con sus propias sesiones; no se borraron datos de otros visitantes. Las identidades anónimas quedan sujetas a la retención del proveedor. No hubo respuestas 502 ni rate-limit en esta ejecución y no se hicieron altas de diagnóstico adicionales.
 
-## Alcance del escaneo de claves
+## Historial: alcance del escaneo inicial de claves
 
 Testing volvió a examinar los cuatro commits disponibles en el momento de la auditoría: 60 snapshots de archivo únicos por objeto Git y 43 archivos rastreados actuales. Comparó siete valores de claves/credenciales cargados solo en memoria, incluidas claves publicables reales, y patrones conocidos de claves y JWT. Examinó además los 14 archivos de `.next/static` del build nuevo frente a doce valores configurados, incluidos URL/claves. Resultado: cero coincidencias y cero archivos prohibidos versionados; ningún valor se imprimió.
 
@@ -106,7 +118,7 @@ Se verificó la configuración y disponibilidad observadas en esta auditoría; l
 
 Los enlaces técnicos están preparados y comprobados. No hacen falta credenciales manuales ni vídeo. Las cuatro preguntas y el enlace personal ya fueron recibidos y revisados privadamente por Orquestador. Quedan pendientes la confirmación de respuestas personales y el envío único; este informe no publica esos datos, no sustituye ese envío y no afirma que se haya realizado.
 
-## Ampliación de acceso desde navegadores actuales
+## Historial: ampliación de acceso b2e098a desde navegadores actuales
 
 Esta fase responde a la petición posterior de facilitar el acceso público desde distintos navegadores y herramientas. No convierte un cambio de idioma/zona horaria o User-Agent en una prueba desde otro país, IP o red.
 
