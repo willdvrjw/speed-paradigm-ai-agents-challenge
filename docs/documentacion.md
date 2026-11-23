@@ -119,3 +119,18 @@ Consultadas el 2026-11-23 antes de crear las pruebas independientes:
 
 - Testing consultó https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/ para revisar foco contenido, navegación por teclado y retorno de foco de los diálogos; corrigió expectativas del arnés de pruebas sin cambios de aplicación.
 - Tras el dictamen APTO y el CRUD HTTPS comprobado, se promovió el mismo despliegue de producción. La URL pública asignada es https://speed-paradigm-ai-agents-challenge.vercel.app y respondió HTTP 200 a una petición sin cookies ni Authorization. La verificación pública independiente no usa bypass ni una sesión Vercel.
+
+## Auditoría contra el enunciado literal
+
+- Se conservó el texto recibido en `docs/enunciado.md`. El usuario pidió comprobar el cumplimiento literal y realizar otra auditoría de calidad.
+- Antes de cambiar protección se consultó https://vercel.com/docs/deployment-protection/methods-to-protect-deployments/vercel-authentication y la ayuda instalada `project protection disable --help`.
+- Hallazgo de infraestructura: `ssoProtection.deploymentType=all_except_custom_domains` seguía activo, aunque la URL final ya era pública. El enunciado pide expresamente quitar Vercel Authentication; se desactivará únicamente en `speed-paradigm-ai-agents-challenge`, sin cambiar los controles de sesión/RLS de la aplicación ni otros proyectos.
+- Se consultaron también https://vercel.com/docs/plans/hobby y https://supabase.com/pricing para contrastar planes gratuitos durante la auditoría. Las comprobaciones ejecutadas y los límites se registrarán por requisito en `docs/auditoria.md`.
+
+- Se revisó https://learn.chatgpt.com/docs/agent-configuration/subagents: los agentes personalizados de proyecto se definen en `.codex/agents/` y requieren `name`, `description` y `developer_instructions`. Las dos definiciones existentes incluyen esos campos y remiten a los Markdown de cada rol; no fue necesario cambiarlas.
+- La desactivación explícita de Vercel Authentication terminó correctamente; la lectura posterior confirmó `ssoProtection=null`, `protectionBypass={}` y protección de forks conservada. La URL de producción y el enlace de despliegue devolvieron HTTP 200 sin cookies ni Authorization. La entrega sigue usando únicamente la URL principal de producción.
+- Las inspecciones actuales confirmaron Vercel Hobby, Supabase Free/available y despliegue READY con destino production. No se aceptaron planes de pago.
+
+- Develop consultó https://vercel.com/docs/deployments/environments y las fuentes de Authentication/Hobby antes de añadir al README los pasos reproducibles de despliegue gratuito, variables en Production, Vercel Authentication desactivado y comprobación privada de la URL principal. No cambió código de aplicación ni fue necesaria otra compilación por esta documentación.
+
+- Testing volvió a consultar la documentación instalada de Next.js para Playwright/Route Handlers, https://playwright.dev/docs/browser-contexts y https://nodejs.org/docs/latest-v24.x/api/test.html antes de la nueva auditoría. La prueba de navegador se reforzó con una aserción explícita de cero cookies iniciales. Los contextos aislados de Chrome y las peticiones públicas no usan sesión de Vercel ni bypass.

@@ -125,3 +125,21 @@ Este archivo registra hechos observados; no equivale a una transcripción comple
 | Pruebas públicas independientes | API HTTPS 8/8 PASS; Chrome E2E 3/3 PASS; sin cookies o sesión Vercel preexistentes |
 | Observabilidad | Logs de plataforma revisados en el intervalo indicado: cero errores; no se aprovisionaron servicios adicionales de monitoreo |
 | Credenciales y artefactos | Excluidos de Git y del envío; revisión de archivos rastreados e historial sin coincidencias de valores sensibles examinados |
+
+## Nueva auditoría del enunciado literal
+
+- El usuario solicitó otra auditoría completa y proporcionó el enunciado original, conservado en `docs/enunciado.md`. Orquestador encargó a los mismos Develop y Testing contrastarlo sin añadir requisitos ni simular colaboración.
+- Develop revisó el contrato y la documentación y no identificó una brecha de producto que exigiera cambiar la app. Testing ejecuta otra revisión independiente con pruebas y dictamen en `docs/auditoria.md`.
+- Se encontró una diferencia literal de infraestructura: la URL final ya era pública, pero Vercel Authentication seguía activado como `all_except_custom_domains`. El enunciado pide quitarlo expresamente. Orquestador consultó las fuentes oficiales, desactivó solo SSO en este proyecto y verificó `ssoProtection=null`, cero bypasses y protección de forks conservada. No se modificaron RLS, sesiones ni otros proyectos.
+- Después del cambio, la URL principal de producción y el enlace individual de despliegue devolvieron HTTP 200 sin cookies, Authorization ni redirecciones. La entrega mantiene la dirección principal de producción.
+- La inspección nueva confirmó Vercel Hobby, Supabase Free/available y destino de despliegue production/READY.
+- GitHub público y seis archivos de referencia (tres Markdown de roles, dos TOML y README) respondieron HTTP 200 sin autenticación. Orquestador examinó 44 archivos actuales y 140 snapshots de cuatro commits contra valores configurados y patrones de credenciales: cero coincidencias y cero archivos prohibidos. Se incluyeron claves publicables reales entre los valores buscados y nunca se imprimieron valores.
+- Se volvieron a contrastar los TOML con la documentación oficial de Codex, que exige `name`, `description` y `developer_instructions` en `.codex/agents/`. Las definiciones existentes cumplen ese contrato; no se cambiaron.
+- Se solicitó el texto exacto de las cuatro preguntas y el enlace personal, que no aparecen en el enunciado recibido. Esos pendientes no se inventan ni autorizan envíos al reclutador.
+
+- Testing ejecutó de nuevo una compilación de producción, comprobación de tipos, 9 pruebas unitarias y auditoría npm: todos pasaron y npm informó cero vulnerabilidades conocidas. Restauró el servidor local tras resolver un proceso hijo de Next que mantenía el puerto; no hubo impacto en producción ni cambio de app.
+- La nueva ejecución pública de integración API más ataques directos RLS pasó 16/16, sin omisiones; Chrome pasó 3/3 en contexto privado con cero cookies iniciales comprobadas expresamente. Las capturas nuevas se revisan en el dictamen de Testing; los datos sintéticos se limpiaron mediante sus sesiones.
+- Develop añadió únicamente una sección al README con despliegue Hobby/Free, variables por nombre, desactivación de Vercel Authentication y verificación de producción en ventana privada. Testing revisa esa documentación sin repetir builds por cambios de texto.
+
+- Testing cerró la auditoría nueva con PASS técnico y revisó las capturas públicas y el README final. `docs/auditoria.md` contiene la matriz literal de 21 cláusulas, el hallazgo AUD-01 corregido, los comandos ejecutados y los límites. Los tres roles participaron realmente; la documentación no presupone que sus tareas se ejecuten simultáneamente.
+- Resultado final de esta auditoría: build y tipos correctos, 9/9 pruebas de reglas, 16/16 de API pública/Supabase-RLS y 3/3 de Chrome limpio, sin omisiones ni vulnerabilidades conocidas reportadas por npm. No aparecieron fallos de aplicación que requirieran cambios de Develop. Solo quedan pendientes del proceso de entrega las cuatro preguntas y el enlace personal.

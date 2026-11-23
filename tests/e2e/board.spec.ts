@@ -12,6 +12,7 @@ test('visitante sin sesión Vercel completa el tablero real en escritorio y móv
   const editedTitle = `${title} revisada`;
   let createdId: string | undefined;
   try {
+    expect((await context.cookies()).length).toBe(0);
     const response = await page.goto('/');
     expect(response?.status()).toBe(200);
     await expect(page.getByRole('heading', { name: 'Haz espacio para lo importante.' })).toBeVisible();

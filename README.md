@@ -22,6 +22,16 @@ Para probar la compilación de producción, ejecutar `npm run build` y después 
 
 No versionar `.env.local`, `.vercel/`, `.tools/`, claves o informes locales. Si faltan variables o Supabase no está disponible, el tablero muestra un error con reintento; no sustituye el servicio por tareas ficticias o almacenamiento local.
 
+## Despliegue gratuito y acceso público
+
+1. Usar **Supabase Free** con la migración aplicada y **Anonymous Sign-Ins** habilitado, como se explica en el arranque local.
+2. En un espacio **Vercel Hobby**, importar este repositorio desde GitHub. Usar la raíz del repositorio, el preset Next.js y Node.js 24; mantener los planes gratuitos.
+3. Configurar para **Production** las variables de servidor `SUPABASE_URL` y `SUPABASE_PUBLISHABLE_KEY`, sin prefijo `NEXT_PUBLIC_` ni claves administrativas. Desplegar la rama `main` en el entorno **Production**; si se cambian variables después, crear un nuevo despliegue para aplicarlas.
+4. En el proyecto de Vercel, abrir **Settings › Deployment Protection**, desactivar **Vercel Authentication** y guardar.
+5. Copiar la URL principal de producción que muestra Vercel y abrirla en una ventana privada sin haber iniciado sesión en Vercel. Debe mostrar Foco, permitir crear una tarea y conservarla al recargar. Si pide iniciar sesión en Vercel, corregir la protección antes de entregar.
+
+Entregar la URL principal de producción indicada al comienzo de este README y el enlace del repositorio. El [enunciado original](docs/enunciado.md) exige acceso público; las fuentes oficiales consultadas están en [docs/documentacion.md](docs/documentacion.md) y las comprobaciones reales en [docs/aceptacion.md](docs/aceptacion.md).
+
 ## Recorrido de demostración
 
 1. Abrir la aplicación: aparece un espacio vacío propio.

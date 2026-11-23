@@ -1,0 +1,7 @@
+# Enunciado original de la prueba
+
+Texto proporcionado por el usuario para la auditoría del 2026-11-23. Se conserva como referencia de requisitos, sin inventar las cuatro preguntas ni el enlace personal de entrega.
+
+## La prueba
+
+Con Claude Code o con Codex, crea un proyecto en Next.js que trabaje con 3 agentes:  1. Orquestador: el agente principal, con su CLAUDE.md (o AGENTS.md), que reparte el trabajo. 2. Develop: un subagente que programa, con su propio .md de cómo programar. 3. Testing: un subagente con un .md de DIRECTRICES que Develop tiene que cumplir. Testing revisa lo que hace Develop y le devuelve los fallos hasta que todo pasa.  Con ese equipo de agentes, haz una app del tema que quieras (tema libre): - con una base de datos gratuita: Firebase o Supabase; - publicada gratis en Vercel (o similar).  MUY IMPORTANTE: la dirección de la app tiene que ser PÚBLICA. Ábrela en una ventana de incógnito sin haber entrado en Vercel: si te pide iniciar sesión, no la podremos ver. En Vercel, quita la protección en Settings › Deployment Protection (Vercel Authentication) y pásanos la dirección de producción, no la de una vista previa.  No hace falta gastar dinero: usa planes gratuitos. No subas claves de API al repositorio. No hace falta vídeo.  Al entregar, con tu enlace personal, nos pasas: - el enlace de la app; - el repositorio de GitHub (público o con acceso para nosotros), con los .md de los agentes; - un usuario y una contraseña de prueba, si la app tiene login; - las respuestas a 4 preguntas cortas.

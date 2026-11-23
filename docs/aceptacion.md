@@ -8,14 +8,16 @@ Responsable: Testing. Fecha de inicio: 2026-11-23 (America/Bogota).
 
 **APROBADO TÉCNICAMENTE.** La aplicación está disponible en producción pública: https://speed-paradigm-ai-agents-challenge.vercel.app . Testing comprobó HTTP 200 sin autenticación ni redirección, 8/8 pruebas de API sobre HTTPS y 3/3 pruebas de Chrome en contextos limpios, sin bypass ni sesión Vercel. Auth anónima, datos reales, persistencia e aislamiento funcionan. Los dictámenes pendientes y errores 422 anteriores se conservan abajo como historial; el bloqueo de Auth ya está resuelto. A17/A18 son pendientes del proceso del reclutador y no bloquean esta entrega técnica.
 
+La nueva auditoría contra el [enunciado literal](enunciado.md) volvió a ejecutar build, tipos, reglas, dependencias, 16/16 de API pública/Supabase-RLS y 3/3 de Chrome. Detectó y cerró una diferencia de infraestructura: Vercel Authentication seguía activo aunque la producción ya fuera pública; ahora Orquestador confirmó `ssoProtection=null` y Testing verificó ambos URLs sin redirección. El detalle literal, comandos y límites actuales están en [auditoria.md](auditoria.md).
+
 ## Matriz final de aceptación
 
 Esta matriz refleja el resultado actual de la revisión y las ejecuciones reales. La evidencia cronológica de cada fase y sus límites se conserva después de la matriz.
 
 | ID | Requisito | Estado | Evidencia o comprobación pendiente |
 | --- | --- | --- | --- |
-| A01 | Aplicación Next.js real con TypeScript | PASS | Next.js 16.4.6 y TypeScript 7.0.2 instalados. Develop ejecutó build de producción correcto; Testing ejecutó `npm run typecheck` y arrancó esa compilación con `npm start` (Ready). |
-| A02 | Tres agentes con Markdown y delegación real | PASS | Markdown y dos TOML versionados; delegación real a Develop y Testing y revisión independiente del código completada. El historial inspeccionado contiene 2 commits y el repositorio es público. |
+| A01 | Aplicación Next.js real con TypeScript | PASS | Next.js 16.4.6 y TypeScript 7.0.2. En la auditoría nueva Testing volvió a ejecutar build de producción y typecheck, ambos exit 0, y reinició el servidor con esa compilación (Ready). |
+| A02 | Tres agentes con Markdown y delegación real | PASS | Inventario nuevo: Orquestador/Develop/Testing, los tres roles reales del equipo. Tres Markdown y ambos TOML rastreados, públicos y analizados; delegación y revisión reales, sin agentes adicionales. |
 | A03 | Testing devuelve fallos y Develop los corrige | PASS | Revisión independiente y pruebas reales completadas; no se encontraron defectos de aplicación que exigieran corrección. Se documentaron y corrigieron expectativas del arnés sin atribuirlas a Develop ni inventar un ciclo de fallos. |
 | A04 | Base de datos gratuita Supabase o Firebase operativa | PASS | Supabase Free real, migración aplicada con TLS verificado; Auth anónima, CRUD persistente y ataques RLS/restricciones SQL ejecutados correctamente. |
 | A05 | CRUD completo de tareas | PASS | Crear, consultar/recargar, editar, cambiar estado y eliminar persistió correctamente en API y Chrome; cancelar/confirmar borrado verificado. |
@@ -23,17 +25,23 @@ Esta matriz refleja el resultado actual de la revisión y las ejecuciones reales
 | A07 | Validación y restricciones | PASS | Reglas, entradas inválidas por HTTP y restricciones SQL directas pasaron; longitud Unicode, blanco/control, estados/prioridades y propietario no permitido incluidos. |
 | A08 | Aislamiento de espacios | PASS | Dos sesiones API y dos identidades Supabase reales; lectura/mutación ajena e INSERT/transferencia de propietario denegados, con integridad posterior de A comprobada. |
 | A09 | Accesibilidad y adaptación | PASS | Chrome real: escritorio/móvil, teclado, foco contenido, Tab a campos, Escape/retorno y acción inicial segura en borrado; etiquetas, anuncios, error y ausencia de overflow verificados. |
-| A10 | Calidad reproducible | PASS | Tipos/build documentados, 9 pruebas de reglas/Origin, auditoría npm, 16/16 de integración local, 8/8 de API HTTPS pública y 3/3 de navegador público, sin omisiones. Detalle de ejecuciones y ajustes de prueba abajo. |
-| A11 | Ausencia de claves API y secretos en repositorio | PASS | 2 commits, 49 snapshots únicos, 7 valores sensibles y prefijos de credenciales examinados sin coincidencias ni archivos prohibidos; 14 archivos cliente y 40 archivos del dry-upload sin fugas. Alcance y límites detallados abajo. |
+| A10 | Calidad reproducible | PASS | Reejecución nueva: build/tipos correctos, 9/9 reglas/Origin, npm audit sin vulnerabilidades informadas, 16/16 API pública/Supabase-RLS y 3/3 Chrome público en 12.0 s, sin omisiones. |
+| A11 | Ausencia de claves API y secretos en repositorio | PASS | Nueva revisión: 4 commits, 60 snapshots únicos, 43 archivos rastreados, 7 valores de claves/credenciales y patrones examinados sin coincidencias; 14 archivos cliente frente a 12 valores configurados, 0 fugas/archivos prohibidos. Alcance en auditoria.md. |
 | A12 | Repositorio GitHub público o accesible | PASS | https://github.com/willdvrjw/speed-paradigm-ai-agents-challenge . GitHub API sin autenticación HTTP 200 informa `visibility:public`, rama main; README raw HTTP 200 con título Foco. |
 | A13 | Despliegue gratis en producción | PASS | `dpl_B3nUE5cHdYBNeBH2nasPtvXmYFm4`, fuente de aplicación `f3d8d5f`, promovido en Hobby; Supabase Free. URL pública con API HTTPS y flujo completo verificados. |
-| A14 | URL pública sin autenticación Vercel | PASS | https://speed-paradigm-ai-agents-challenge.vercel.app devuelve HTTP 200 sin cookies/Authorization, sin redirección. Chrome limpio completa el flujo sin bypass ni login Vercel. |
+| A14 | URL pública sin autenticación Vercel | PASS | Producción y URL directo devuelven 200 sin cookies/Authorization/bypass ni redirección. Vercel Authentication fue desactivado expresamente: lectura `ssoProtection=null`, `protectionBypass={}`. Chrome limpio completa el flujo. |
 | A15 | README con arranque y demostración | PASS | README real con URL pública/repositorio, requisitos, instalación, SQL, variables por nombre, comandos, arquitectura y recorrido de demostración. |
 | A16 | Credenciales de prueba si hay login | PASS | No existe formulario de login y Chrome público no presenta acceso Vercel. Sesión anónima creada automáticamente y CRUD real comprobado; no se necesitan credenciales de demostración. |
 | A17 | Cuatro respuestas cortas del reclutador | PENDIENTE | El texto exacto de las cuatro preguntas no fue incluido en el encargo. No inventarlas. |
 | A18 | Entrega mediante enlace personal | PENDIENTE | El enlace personal no fue incluido; preparar los entregables sin enviar mensajes ni formularios por iniciativa propia. |
 
-## Historial de revisión
+## Auditoría nueva del enunciado literal
+
+La matriz anterior es el estado actual después de la auditoría nueva; no depende exclusivamente de resultados de fases anteriores. [auditoria.md](auditoria.md) contiene la correspondencia de cada cláusula literal con su evidencia y estado. En esta fase no se encontraron defectos de aplicación; AUD-01 es una diferencia de infraestructura corregida por Orquestador y revisada mediante acceso público real. No se inventa una corrección de Develop.
+
+Comprobaciones ejecutadas otra vez: `npm run build`, `npm run typecheck`, `npm test` (9/9), `npm audit --json` (0 vulnerabilidades informadas), `npm run test:integration` con `TEST_BASE_URL=https://speed-paradigm-ai-agents-challenge.vercel.app` (16/16, sin omisiones) y `npm run test:e2e` contra la misma URL (3/3 en 12.0 s). Se añadió al test principal una comprobación explícita de cero cookies iniciales y se inspeccionaron las capturas nuevas de escritorio/móvil. Las tareas sintéticas se limpiaron; no hubo 502 ni rate-limit. También se verificaron los Markdown/TOML públicos y el historial/cliente frente a claves reales y patrones, sin exponer valores.
+
+## Historial de revisión anterior
 
 Las secciones siguientes conservan el avance cronológico, incluidos límites y rechazos de Auth que ya fueron resueltos. Al inicio Testing leyó `AGENTS.md`, `agents/develop.md` y `agents/testing/DIRECTRICES.md`, y solo existían instrucciones/documentación, sin aplicación, dependencias ni despliegue. Para conocer el resultado vigente deben usarse el estado y la matriz final anteriores y la validación pública al final del documento.
 
